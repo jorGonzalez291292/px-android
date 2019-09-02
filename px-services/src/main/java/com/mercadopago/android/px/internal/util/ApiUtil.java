@@ -5,6 +5,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.model.exceptions.ApiException;
+import java.io.IOException;
 import retrofit2.Response;
 
 public final class ApiUtil {
@@ -13,13 +14,13 @@ public final class ApiUtil {
 
     }
 
-    public static <T> ApiException getApiException(Response<T> response) {
+    public static <T> ApiException getApiException(final Response<T> response) {
 
         ApiException apiException = null;
         try {
             final String errorString = response.errorBody().string();
             apiException = JsonUtil.getInstance().fromJson(errorString, ApiException.class);
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             //Do nothing
         } finally {
             if (apiException == null) {
@@ -31,15 +32,17 @@ public final class ApiUtil {
         return apiException;
     }
 
-    public static ApiException getApiException(Throwable throwable) {
+    public static ApiException getApiException(final Throwable throwable) {
         final ApiException apiException = new ApiException();
         if (throwable instanceof NoConnectivityException) {
             apiException.setStatus(StatusCodes.NO_CONNECTIVITY_ERROR);
+        } else if (throwable instanceof IOException) {
+            apiException.setStatus(StatusCodes.GENERIC_TIME_OUT);
         }
 
         try {
             apiException.setMessage(throwable.getMessage());
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             // do nothing
         }
 
@@ -69,7 +72,7 @@ public final class ApiUtil {
                 }
 
                 return haveConnectedWifi || haveConnectedMobile;
-            } catch (Exception ex) {
+            } catch (final Exception ex) {
                 return false;
             }
         } else {
@@ -83,6 +86,7 @@ public final class ApiUtil {
 
         }
 
+        private static final int GENERIC_TIME_OUT = -2;
         public static final int INTERNAL_SERVER_ERROR = 500;
         public static final int PROCESSING = 499;
         public static final int BAD_REQUEST = 400;
