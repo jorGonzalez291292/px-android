@@ -4,11 +4,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration;
-import com.mercadopago.android.px.internal.features.paymentresult.components.Body;
-import com.mercadopago.android.px.internal.features.paymentresult.components.BodyError;
-import com.mercadopago.android.px.internal.features.paymentresult.props.PaymentResultBodyProps;
+import com.mercadopago.android.px.internal.features.payment_result.components.Body;
+import com.mercadopago.android.px.internal.features.payment_result.components.BodyError;
+import com.mercadopago.android.px.internal.features.payment_result.props.PaymentResultBodyProps;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
-import com.mercadopago.android.px.internal.view.Receipt;
 import com.mercadopago.android.px.mocks.Instructions;
 import com.mercadopago.android.px.mocks.PaymentResults;
 import com.mercadopago.android.px.model.Instruction;
@@ -49,7 +48,7 @@ public class BodyTest {
         final Body body = new Body(getBodyPropsForInstructions(instruction),
             dispatcher);
 
-        com.mercadopago.android.px.internal.features.paymentresult.components.Instructions instructionsComponent =
+        com.mercadopago.android.px.internal.features.payment_result.components.Instructions instructionsComponent =
             body.getInstructionsComponent();
         Assert.assertEquals(instructionsComponent.props.instruction, instruction);
     }

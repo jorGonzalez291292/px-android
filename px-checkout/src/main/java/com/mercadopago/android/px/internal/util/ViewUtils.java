@@ -27,14 +27,12 @@ import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import com.mercadolibre.android.ui.font.Font;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.view.MPEditText;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-import javax.annotation.Nonnull;
 import uk.co.chrisjenx.calligraphy.TypefaceUtils;
 
 public final class ViewUtils {
@@ -53,23 +51,6 @@ public final class ViewUtils {
     public static boolean hasEndedAnim(@NonNull final View viewToAnimate) {
         return viewToAnimate.getAnimation() == null ||
             (viewToAnimate.getAnimation() != null && viewToAnimate.getAnimation().hasEnded());
-    }
-
-    public static void addCancelToolbar(@NonNull final ViewGroup parentViewGroup, @ColorRes final int backgroundColor) {
-        final Context context = parentViewGroup.getContext();
-        final Toolbar toolbar = (Toolbar) ViewUtils.inflate(parentViewGroup, R.layout.px_toolbar_cancel);
-        parentViewGroup.addView(toolbar);
-        toolbar.setBackgroundColor(ContextCompat.getColor(context, backgroundColor));
-
-        if (context instanceof AppCompatActivity) {
-            final AppCompatActivity appCompatActivity = (AppCompatActivity) context;
-            appCompatActivity.setSupportActionBar(toolbar);
-            final ActionBar supportActionBar = appCompatActivity.getSupportActionBar();
-            supportActionBar.setHomeAsUpIndicator(R.drawable.ic_close);
-            supportActionBar.setDisplayHomeAsUpEnabled(true);
-            supportActionBar.setDisplayShowTitleEnabled(false);
-            toolbar.setNavigationOnClickListener(v -> appCompatActivity.onBackPressed());
-        }
     }
 
     public static void loadOrCallError(final String imgUrl, final ImageView logo, final Callback callback) {
@@ -121,10 +102,9 @@ public final class ViewUtils {
     }
 
     public static void hideKeyboard(final Activity activity) {
-
         try {
-            MPEditText editText = (MPEditText) activity.getCurrentFocus();
-            InputMethodManager imm = (InputMethodManager) activity.getSystemService(
+            final MPEditText editText = (MPEditText) activity.getCurrentFocus();
+            final InputMethodManager imm = (InputMethodManager) activity.getSystemService(
                 Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
         } catch (final Exception ex) {
@@ -147,7 +127,6 @@ public final class ViewUtils {
     }
 
     private static void showLayout(final Activity activity, final boolean showProgress, final boolean showLayout) {
-
         final View form = activity.findViewById(R.id.mpsdkRegularLayout);
         final View progress = activity.findViewById(R.id.mpsdkProgressLayout);
 
@@ -225,44 +204,32 @@ public final class ViewUtils {
         view.setLayoutParams(params);
     }
 
-    @Nonnull
-    public static View inflate(@Nonnull final ViewGroup parent, @LayoutRes final int layout) {
+    public static void wrapHeight(@NonNull final View view) {
+        final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        view.setLayoutParams(params);
+    }
+
+    @NonNull
+    public static View inflate(@NonNull final ViewGroup parent, @LayoutRes final int layout) {
         return LayoutInflater.from(parent.getContext()).inflate(layout, parent, false);
     }
 
-    @Nonnull
-    public static View compose(@Nonnull final ViewGroup container, @Nonnull final View... children) {
-        for (View child : children) {
-            container.addView(child);
-        }
-        return container;
-    }
-
-    @Nonnull
-    public static View compose(@Nonnull final ViewGroup container, @Nonnull final View child) {
+    @NonNull
+    public static View compose(@NonNull final ViewGroup container, @NonNull final View child) {
         container.addView(child);
         return container;
     }
 
-    @Nonnull
+    @NonNull
     public static LinearLayout createLinearContainer(final Context context) {
         final LinearLayout linearLayout = new LinearLayout(context);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         linearLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT));
         return linearLayout;
-    }
-
-    @Nonnull
-    public static ScrollView createScrollContainer(final Context context) {
-        final ScrollView scrollView = new ScrollView(context);
-        scrollView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT));
-        scrollView.setBackgroundColor(scrollView
-            .getContext()
-            .getResources()
-            .getColor(R.color.px_white_background));
-        return scrollView;
     }
 
     public static void cancelAnimation(@NonNull final View targetView) {

@@ -1,6 +1,5 @@
 package com.mercadopago.android.px.internal.features.paymentresult;
 
-import com.mercadopago.android.px.internal.view.Receipt;
 import com.mercadopago.android.px.mocks.PaymentResults;
 import com.mercadopago.android.px.model.PaymentResult;
 import junit.framework.Assert;

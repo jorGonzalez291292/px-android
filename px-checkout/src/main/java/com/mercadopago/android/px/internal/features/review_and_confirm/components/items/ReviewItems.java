@@ -14,29 +14,16 @@ import com.mercadopago.android.px.internal.features.review_and_confirm.models.It
 import com.mercadopago.android.px.internal.view.CompactComponent;
 import com.mercadopago.android.px.internal.view.Renderer;
 import com.mercadopago.android.px.internal.view.RendererFactory;
-import javax.annotation.Nonnull;
 
 public class ReviewItems extends CompactComponent<ReviewItems.Props, Void> {
 
     public static class Props {
+        /* default */ final ItemsModel itemsModel;
+        /* default */ final Integer collectorIcon;
+        /* default */ final String quantityLabel;
+        /* default */ final String unitPriceLabel;
 
-        public ItemsModel getItemsModel() {
-            return itemsModel;
-        }
-
-        final ItemsModel itemsModel;
-
-        @Nullable
-        public Integer getCollectorIcon() {
-            return collectorIcon;
-        }
-
-        @DrawableRes final Integer collectorIcon;
-        final String quantityLabel;
-        final String unitPriceLabel;
-
-        public Props(final ItemsModel itemsModel,
-            @Nullable @DrawableRes final Integer collectorIcon,
+        public Props(final ItemsModel itemsModel, @Nullable @DrawableRes final Integer collectorIcon,
             final String quantityLabel,
             final String unitPriceLabel) {
             this.itemsModel = itemsModel;
@@ -51,7 +38,7 @@ public class ReviewItems extends CompactComponent<ReviewItems.Props, Void> {
     }
 
     @Override
-    public View render(@Nonnull final ViewGroup parent) {
+    public View render(@NonNull final ViewGroup parent) {
         final Context context = parent.getContext();
         final LinearLayout linearLayout = createMainLayout(context);
 
@@ -69,8 +56,8 @@ public class ReviewItems extends CompactComponent<ReviewItems.Props, Void> {
     @VisibleForTesting
     @DrawableRes
     int getIcon(final ReviewItems.Props props) {
-        if (props.getItemsModel().hasUniqueItem()) {
-            return props.getCollectorIcon() == null ? R.drawable.px_review_item_default : props.getCollectorIcon();
+        if (props.itemsModel.hasUniqueItem()) {
+            return props.collectorIcon == null ? R.drawable.px_review_item_default : props.collectorIcon;
         } else {
             return R.drawable.px_review_item_default;
         }
@@ -85,8 +72,7 @@ public class ReviewItems extends CompactComponent<ReviewItems.Props, Void> {
         return linearLayout;
     }
 
-    private void addReviewItem(@NonNull final ReviewItem reviewItem,
-        final ViewGroup container) {
+    private void addReviewItem(@NonNull final ReviewItem reviewItem, final ViewGroup container) {
         final Renderer renderer = RendererFactory.create(container.getContext(), reviewItem);
         renderer.render(container);
     }
