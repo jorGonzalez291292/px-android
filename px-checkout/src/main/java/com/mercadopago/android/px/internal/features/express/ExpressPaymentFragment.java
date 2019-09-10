@@ -440,9 +440,9 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         hubAdapter.updateData(paymentMethodIndex, payerCostSelected, splitSelectionState);
     }
 
-    //TODO refactor
     @Override
     public void showPaymentResult(@NonNull final IPaymentDescriptor paymentResult) {
+        //TODO refactor, this should be handled here and not in CheckoutActivity
         if (getActivity() != null) {
             ((CheckoutActivity) getActivity()).presenter.onPaymentFinished(paymentResult);
         }

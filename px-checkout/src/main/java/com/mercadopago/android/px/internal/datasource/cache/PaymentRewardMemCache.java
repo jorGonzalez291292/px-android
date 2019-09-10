@@ -2,50 +2,50 @@ package com.mercadopago.android.px.internal.datasource.cache;
 
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.callbacks.MPCall;
-import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.exceptions.ApiException;
+import com.mercadopago.android.px.model.internal.PaymentReward;
 import com.mercadopago.android.px.services.Callback;
 
-public class GroupsMemCache implements Cache<PaymentMethodSearch> {
+public class PaymentRewardMemCache implements Cache<PaymentReward> {
 
-    private PaymentMethodSearch groups;
+    private PaymentReward paymentReward;
 
     @NonNull
     @Override
-    public MPCall<PaymentMethodSearch> get() {
-        return new MPCall<PaymentMethodSearch>() {
+    public MPCall<PaymentReward> get() {
+        return new MPCall<PaymentReward>() {
             @Override
-            public void enqueue(final Callback<PaymentMethodSearch> callback) {
+            public void enqueue(final Callback<PaymentReward> callback) {
                 resolve(callback);
             }
 
             @Override
-            public void execute(final Callback<PaymentMethodSearch> callback) {
+            public void execute(final Callback<PaymentReward> callback) {
                 resolve(callback);
             }
         };
     }
 
-    /* default */ void resolve(final Callback<PaymentMethodSearch> callback) {
+    /* default */ void resolve(final Callback<PaymentReward> callback) {
         if (isCached()) {
-            callback.success(groups);
+            callback.success(paymentReward);
         } else {
             callback.failure(new ApiException());
         }
     }
 
     @Override
-    public void put(@NonNull final PaymentMethodSearch groups) {
-        this.groups = groups;
+    public void put(@NonNull final PaymentReward paymentReward) {
+        this.paymentReward = paymentReward;
     }
 
     @Override
     public void evict() {
-        groups = null;
+        paymentReward = null;
     }
 
     @Override
     public boolean isCached() {
-        return groups != null;
+        return paymentReward != null;
     }
 }

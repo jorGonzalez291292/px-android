@@ -12,14 +12,16 @@ import com.mercadopago.android.px.internal.navigation.OnChangePaymentMethodDrive
 import com.mercadopago.android.px.internal.repository.CheckoutPreferenceRepository;
 import com.mercadopago.android.px.internal.repository.GroupsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
+import com.mercadopago.android.px.internal.repository.PaymentRewardRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.util.PreferenceValidator;
+import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.CheckoutStateModel;
+import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
-import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.Cause;
@@ -32,8 +34,10 @@ import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.CheckoutPreferenceException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.model.internal.PaymentReward;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
+import java.util.Collections;
 import java.util.List;
 
 public class CheckoutPresenter extends BasePresenter<Checkout.View> implements PaymentServiceHandler,
@@ -43,22 +47,22 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
     @NonNull /* default */ final PaymentRepository paymentRepository;
     @NonNull /* default */ final PaymentSettingRepository paymentSettingRepository;
     @NonNull /* default */ final UserSelectionRepository userSelectionRepository;
-    @NonNull /* default */ final BusinessModelMapper businessModelMapper;
     @NonNull /* default */ final CheckoutPreferenceRepository checkoutPreferenceRepository;
     @NonNull private final PluginRepository pluginRepository;
     @NonNull private final GroupsRepository groupsRepository;
+    @NonNull private final PaymentRewardRepository paymentRewardRepository;
     @NonNull private final InternalConfiguration internalConfiguration;
     private transient FailureRecovery failureRecovery;
 
-    public CheckoutPresenter(@NonNull final CheckoutStateModel persistentData,
+    /* default */ CheckoutPresenter(@NonNull final CheckoutStateModel persistentData,
         @NonNull final PaymentSettingRepository paymentSettingRepository,
         @NonNull final UserSelectionRepository userSelectionRepository,
         @NonNull final GroupsRepository groupsRepository,
         @NonNull final PluginRepository pluginRepository,
         @NonNull final PaymentRepository paymentRepository,
         @NonNull final CheckoutPreferenceRepository checkoutPreferenceRepository,
-        @NonNull final InternalConfiguration internalConfiguration,
-        @NonNull final BusinessModelMapper businessModelMapper) {
+        @NonNull final PaymentRewardRepository paymentRewardRepository,
+        @NonNull final InternalConfiguration internalConfiguration) {
 
         this.paymentSettingRepository = paymentSettingRepository;
         this.userSelectionRepository = userSelectionRepository;
@@ -66,8 +70,8 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
         this.pluginRepository = pluginRepository;
         this.paymentRepository = paymentRepository;
         this.checkoutPreferenceRepository = checkoutPreferenceRepository;
+        this.paymentRewardRepository = paymentRewardRepository;
         this.internalConfiguration = internalConfiguration;
-        this.businessModelMapper = businessModelMapper;
         state = persistentData;
     }
 
@@ -236,13 +240,15 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
 
     private void resolvePaymentFailure(final MercadoPagoError mercadoPagoError) {
         if (mercadoPagoError != null && mercadoPagoError.isPaymentProcessing()) {
+            final String currencyId = paymentSettingRepository.getCheckoutPreference().getSite().getCurrencyId();
             final PaymentResult paymentResult =
                 new PaymentResult.Builder()
                     .setPaymentData(paymentRepository.getPaymentDataList())
                     .setPaymentStatus(Payment.StatusCodes.STATUS_IN_PROCESS)
                     .setPaymentStatusDetail(Payment.StatusDetail.STATUS_DETAIL_PENDING_CONTINGENCY)
                     .build();
-            getView().showPaymentResult(paymentResult);
+            final PaymentModel paymentModel = new PaymentModel(null, paymentResult, PaymentReward.EMPTY, currencyId);
+            getView().showPaymentResult(paymentModel);
         } else if (mercadoPagoError != null && mercadoPagoError.isInternalServerError()) {
             setFailureRecovery(() -> getView().startPayment());
             getView().showError(mercadoPagoError);
@@ -435,17 +441,27 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
 
     @Override
     public void onPaymentFinished(@NonNull final IPaymentDescriptor payment) {
+        paymentRewardRepository.getPaymentReward(Collections.singletonList(payment), this::handleResult);
+    }
+
+    private void handleResult(@NonNull final IPaymentDescriptor payment,
+        @NonNull final PaymentReward paymentReward) {
+        final PaymentResult paymentResult = paymentRepository.createPaymentResult(payment);
+        final String currencyId = paymentSettingRepository.getCheckoutPreference().getSite().getCurrencyId();
         payment.process(new IPaymentDescriptorHandler() {
             @Override
             public void visit(@NonNull final IPaymentDescriptor payment) {
                 getView().hideProgress();
-                getView().showPaymentResult(paymentRepository.createPaymentResult(payment));
+                final PaymentModel paymentModel = new PaymentModel(payment, paymentResult, paymentReward, currencyId);
+                getView().showPaymentResult(paymentModel);
             }
 
             @Override
             public void visit(@NonNull final BusinessPayment businessPayment) {
                 getView().hideProgress();
-                getView().showBusinessResult(businessModelMapper.map(businessPayment));
+                final BusinessPaymentModel paymentModel =
+                    new BusinessPaymentModel(businessPayment, paymentResult, paymentReward, currencyId);
+                getView().showBusinessResult(paymentModel);
             }
         });
     }

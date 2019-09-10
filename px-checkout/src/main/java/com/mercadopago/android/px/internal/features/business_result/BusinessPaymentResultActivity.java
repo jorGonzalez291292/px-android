@@ -69,7 +69,7 @@ public class BusinessPaymentResultActivity extends PXActivity implements ActionD
             Session.getInstance().getConfigurationModule().getPaymentSettings().getCheckoutPreference();
 
         return new ResultViewTrack(ResultViewTrack.Style.CUSTOM, new PaymentResult.Builder()
-            .setPaymentData(model.getPaymentDataList())
+            .setPaymentData(model.getPaymentResult().getPaymentDataList())
             .setPaymentStatus(model.payment.getPaymentStatus())
             .setPaymentStatusDetail(model.payment.getPaymentStatusDetail())
             .setPaymentId(model.payment.getId())

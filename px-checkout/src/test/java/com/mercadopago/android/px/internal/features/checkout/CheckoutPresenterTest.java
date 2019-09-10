@@ -8,12 +8,13 @@ import com.mercadopago.android.px.internal.features.Constants;
 import com.mercadopago.android.px.internal.repository.CheckoutPreferenceRepository;
 import com.mercadopago.android.px.internal.repository.GroupsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
+import com.mercadopago.android.px.internal.repository.PaymentRewardRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.viewmodel.CheckoutStateModel;
+import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.RecoverPaymentPostPaymentAction;
-import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper;
 import com.mercadopago.android.px.mocks.PaymentMethodSearchs;
 import com.mercadopago.android.px.mocks.Payments;
 import com.mercadopago.android.px.model.BusinessPayment;
@@ -22,8 +23,8 @@ import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentRecovery;
-import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.Setting;
+import com.mercadopago.android.px.model.Sites;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.CheckoutPreferenceException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
@@ -68,8 +69,8 @@ public class CheckoutPresenterTest {
     @Mock private PluginRepository pluginRepository;
     @Mock private PaymentRepository paymentRepository;
     @Mock private CheckoutPreferenceRepository checkoutPreferenceRepository;
+    @Mock private PaymentRewardRepository paymentRewardRepository;
     @Mock private InternalConfiguration internalConfiguration;
-    @Mock private BusinessModelMapper businessModelMapper;
 
     private CheckoutPresenter presenter;
 
@@ -582,11 +583,13 @@ public class CheckoutPresenterTest {
         final MercadoPagoError mercadoPagoError = mock(MercadoPagoError.class);
         when(mercadoPagoError.isPaymentProcessing()).thenReturn(true);
         when(paymentRepository.getPaymentDataList()).thenReturn(mock(List.class));
-
+        final CheckoutPreference checkoutPreference = mock(CheckoutPreference.class);
+        when(paymentSettingRepository.getCheckoutPreference()).thenReturn(checkoutPreference);
+        when(checkoutPreference.getSite()).thenReturn(Sites.ARGENTINA);
         presenter.onPaymentError(mercadoPagoError);
 
         verify(checkoutView).hideProgress();
-        verify(checkoutView).showPaymentResult(any(PaymentResult.class));
+        verify(checkoutView).showPaymentResult(any(PaymentModel.class));
         verifyNoMoreInteractions(checkoutView);
     }
 
@@ -711,8 +714,8 @@ public class CheckoutPresenterTest {
             pluginRepository,
             paymentRepository,
             checkoutPreferenceRepository,
-            internalConfiguration,
-            businessModelMapper);
+            paymentRewardRepository,
+            internalConfiguration);
 
         presenter.attachView(view);
         return presenter;
