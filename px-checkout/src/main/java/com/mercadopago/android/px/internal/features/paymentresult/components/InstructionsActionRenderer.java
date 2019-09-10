@@ -27,12 +27,7 @@ public class InstructionsActionRenderer extends Renderer<InstructionsAction> {
         final Action action = getAction(component.props.instructionAction);
         if (action != null) {
             button.setText(component.props.instructionAction.getLabel());
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(final View v) {
-                    component.getDispatcher().dispatch(action);
-                }
-            });
+            button.setOnClickListener(v -> component.getDispatcher().dispatch(action));
             parent.addView(button);
         }
 

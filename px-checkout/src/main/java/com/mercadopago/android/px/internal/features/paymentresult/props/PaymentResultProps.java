@@ -79,7 +79,7 @@ public class PaymentResultProps {
         /* default */ @NonNull final PaymentResultScreenConfiguration paymentResultScreenConfiguration;
         /* default */ PaymentResult paymentResult;
         /* default */ Instruction instruction;
-        /* default */ String headerMode = HeaderProps.HEADER_MODE_WRAP;
+        /* default */ String headerMode;
         /* default */ boolean loading = true;
         /* default */ ProcessingMode processingMode;
         /* default */ String currencyId;

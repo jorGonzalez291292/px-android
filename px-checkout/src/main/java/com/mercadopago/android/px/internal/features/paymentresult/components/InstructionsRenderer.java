@@ -8,10 +8,6 @@ import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.view.Renderer;
 import com.mercadopago.android.px.internal.view.RendererFactory;
 
-/**
- * Created by vaserber on 11/13/17.
- */
-
 public class InstructionsRenderer extends Renderer<Instructions> {
 
     @Override

@@ -8,12 +8,8 @@ import com.mercadopago.android.px.internal.features.paymentresult.props.PaymentR
 import com.mercadopago.android.px.internal.util.CurrenciesUtil;
 import com.mercadopago.android.px.internal.util.PaymentDataHelper;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
-import com.mercadopago.android.px.internal.view.CompactComponent;
 import com.mercadopago.android.px.internal.view.Component;
-import com.mercadopago.android.px.internal.view.PaymentMethodBodyComponent;
-import com.mercadopago.android.px.internal.view.Receipt;
 import com.mercadopago.android.px.internal.viewmodel.PaymentResultViewModel;
-import com.mercadopago.android.px.model.ExternalFragment;
 
 public class Body extends Component<PaymentResultBodyProps, Void> {
 
@@ -39,12 +35,6 @@ public class Body extends Component<PaymentResultBodyProps, Void> {
         return paymentResultViewModel.hasBodyError();
     }
 
-    /* default */ boolean isStatusApproved() {
-        final PaymentResultViewModel paymentResultViewModel =
-            PaymentResultViewModelFactory.createPaymentResultViewModel(props.paymentResult);
-        return paymentResultViewModel.isApprovedSuccess();
-    }
-
     public BodyError getBodyErrorComponent() {
         final BodyErrorProps bodyErrorProps = new BodyErrorProps.Builder()
             .setStatus(props.paymentResult.getPaymentStatus())
@@ -54,35 +44,5 @@ public class Body extends Component<PaymentResultBodyProps, Void> {
                 PaymentDataHelper.getPrettyAmountToPay(props.paymentResult.getPaymentData())))
             .build();
         return new BodyError(bodyErrorProps, getDispatcher());
-    }
-
-    public boolean hasReceipt() {
-        return props.paymentResult.getPaymentId() != null
-            && isStatusApproved();
-    }
-
-    public Receipt getReceiptComponent() {
-        return new Receipt(new Receipt.ReceiptProps(String.valueOf(props.paymentResult.getPaymentId())));
-    }
-
-    public boolean hasTopCustomComponent() {
-        return props.paymentResultScreenConfiguration.hasTopFragment();
-    }
-
-    public boolean hasBottomCustomComponent() {
-        return props.paymentResultScreenConfiguration.hasBottomFragment();
-    }
-
-    /* default */ ExternalFragment topFragment() {
-        return props.paymentResultScreenConfiguration.getTopFragment();
-    }
-
-    /* default */ ExternalFragment bottomFragment() {
-        return props.paymentResultScreenConfiguration.getBottomFragment();
-    }
-
-    /* default */ CompactComponent getPaymentMethodBody() {
-        return new PaymentMethodBodyComponent(PaymentMethodBodyComponent.PaymentMethodBodyProp
-            .with(props.paymentResult.getPaymentDataList(), props.currencyId, props.paymentResult.getPaymentStatus()));
     }
 }

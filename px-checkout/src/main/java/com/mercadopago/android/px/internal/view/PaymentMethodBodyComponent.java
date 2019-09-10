@@ -10,7 +10,6 @@ import android.widget.LinearLayout;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.features.paymentresult.components.LineSeparator;
 import com.mercadopago.android.px.internal.util.ViewUtils;
-import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.display_info.DisplayInfo;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -42,19 +41,6 @@ public class PaymentMethodBodyComponent
         /* default */ PaymentMethodBodyProp(final Parcel in) {
             paymentMethodProps = new ArrayList<>();
             in.readList(paymentMethodProps, PaymentMethodComponent.PaymentMethodProps.class.getClassLoader());
-        }
-
-        public static PaymentMethodBodyComponent.PaymentMethodBodyProp with(
-            @NonNull final Iterable<PaymentData> paymentDataList,
-            @NonNull final String currencyId,
-            @NonNull final String statementDescription) {
-            final PaymentMethodBodyProp instance = new PaymentMethodBodyProp();
-            instance.paymentMethodProps = new ArrayList<>();
-            for (final PaymentData paymentData : paymentDataList) {
-                instance.paymentMethodProps
-                    .add(PaymentMethodComponent.PaymentMethodProps.with(paymentData, currencyId, statementDescription));
-            }
-            return instance;
         }
 
         public static PaymentMethodBodyProp with(

@@ -2,7 +2,6 @@ package com.mercadopago.android.px.internal.features.paymentresult.components;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.AppCompatButton;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -17,14 +16,10 @@ public class BodyErrorRenderer extends Renderer<BodyError> {
     public View render(@NonNull final BodyError component, @NonNull final Context context, final ViewGroup parent) {
         final View bodyErrorView = inflate(R.layout.px_payment_result_body_error, parent);
         final ViewGroup bodyViewGroup = bodyErrorView.findViewById(R.id.bodyErrorContainer);
-        final MPTextView titleTextView = bodyErrorView.findViewById(R.id.paymentResultBodyErrorTitle);
-        final MPTextView descriptionTextView = bodyErrorView.findViewById(R.id.paymentResultBodyErrorDescription);
-        final MPTextView titleDescriptionTextView = bodyErrorView.findViewById(R.id.paymentResultBodyErrorTitleDescription);
-        final AppCompatButton actionButton = bodyErrorView.findViewById(R.id.paymentResultBodyErrorAction);
-        final View middleDivider = bodyErrorView.findViewById(R.id.bodyErrorMiddleDivider);
-        final MPTextView secondaryTitleTextView = bodyErrorView.findViewById(R.id.bodyErrorSecondaryTitle);
-        final View bottomDivider = bodyErrorView.findViewById(R.id.bodyErrorBottomDivider);
-        final View bodyErrorDescriptionDivider = bodyErrorView.findViewById(R.id.bodyErrorDescriptionDivider);
+        final MPTextView titleTextView = bodyViewGroup.findViewById(R.id.help_title);
+        final MPTextView descriptionTextView = bodyViewGroup.findViewById(R.id.help_description);
+        final MPTextView titleDescriptionTextView = bodyViewGroup.findViewById(R.id.paymentResultBodyErrorTitleDescription);
+        final View bodyErrorDescriptionDivider = bodyViewGroup.findViewById(R.id.bodyErrorDescriptionDivider);
 
         setText(titleTextView, component.getTitle(context));
         setText(titleDescriptionTextView, component.getTitleDescription(context));
@@ -42,12 +37,6 @@ public class BodyErrorRenderer extends Renderer<BodyError> {
         if (!component.getTitleDescription(context).isEmpty()) {
             bodyErrorDescriptionDivider.setVisibility(View.VISIBLE);
         }
-
-        actionButton.setVisibility(View.GONE);
-        middleDivider.setVisibility(View.GONE);
-        secondaryTitleTextView.setVisibility(View.GONE);
-        bottomDivider.setVisibility(View.GONE);
-
 
         ViewUtils.stretchHeight(bodyViewGroup);
 

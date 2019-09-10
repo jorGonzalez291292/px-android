@@ -31,58 +31,9 @@ public class PaymentMethodComponent extends CompactComponent<PaymentMethodCompon
     @Override
     public View render(@Nonnull final ViewGroup parent) {
         final Context context = parent.getContext();
-        final View paymentMethodView = ViewUtils.inflate(parent, R.layout.px_payment_method_component);
-        final ImageView imageView = paymentMethodView.findViewById(R.id.mpsdkPaymentMethodIcon);
-        final MPTextView descriptionTextView = paymentMethodView.findViewById(R.id.mpsdkPaymentMethodDescription);
-        final MPTextView statementDescriptionTextView = paymentMethodView.findViewById(R.id.mpsdkStatementDescription);
+        final View paymentMethodView = ViewUtils.inflate(parent, R.layout.px_payment_result_method);
 
-        addTotalAmountContainer(this, context, paymentMethodView);
-
-        imageView.setImageDrawable(
-            ContextCompat.getDrawable(context, ResourceUtil.getIconResource(context, props.paymentMethod.getId())));
-        descriptionTextView
-            .setText(getDescription(props.paymentMethod.getName(), props.paymentMethod.getPaymentTypeId(),
-                props.lastFourDigits, context));
-        final String disclaimerText = getDisclaimer(props.paymentMethod.getPaymentTypeId(), props.disclaimer, context);
-        ViewUtils.loadOrGone(disclaimerText, statementDescriptionTextView);
         return paymentMethodView;
-    }
-
-    private void addTotalAmountContainer(@NonNull final PaymentMethodComponent component,
-        @NonNull final Context context,
-        final View paymentMethodView) {
-        final FrameLayout totalAmountContainer = paymentMethodView.findViewById(R.id.mpsdkTotalAmountContainer);
-        RendererFactory.create(context, getTotalAmountComponent(component.props.totalAmountProps))
-            .render(totalAmountContainer);
-    }
-
-    private Component getTotalAmountComponent(final TotalAmount.Props props) {
-        return new TotalAmount(props);
-    }
-
-    @VisibleForTesting
-    @NonNull
-    String getDisclaimer(final String paymentMethodTypeId, final String disclaimer, final Context context) {
-        if (PaymentTypes.isCardPaymentType(paymentMethodTypeId) && TextUtil.isNotEmpty(disclaimer)) {
-            return String.format(context.getString(R.string.px_text_state_account_activity_congrats), disclaimer);
-        }
-        return "";
-    }
-
-    @VisibleForTesting
-    @NonNull
-    String getDescription(final String paymentMethodName,
-        final String paymentMethodType,
-        final String lastFourDigits,
-        final Context context) {
-        if (PaymentTypes.isCardPaymentType(paymentMethodType)) {
-            return String.format(Locale.getDefault(), "%s %s %s",
-                paymentMethodName,
-                context.getString(R.string.px_ending_in),
-                lastFourDigits);
-        } else {
-            return paymentMethodName;
-        }
     }
 
     public static class PaymentMethodProps implements Parcelable {
@@ -120,19 +71,6 @@ public class PaymentMethodComponent extends CompactComponent<PaymentMethodCompon
             totalAmountProps = in.readParcelable(TotalAmount.Props.class.getClassLoader());
             lastFourDigits = in.readString();
             disclaimer = in.readString();
-        }
-
-        public static PaymentMethodProps with(@NonNull final PaymentData paymentData,
-            @NonNull final String currencyId,
-            @NonNull final String statementDescription) {
-            final TotalAmount.Props totalAmountProps =
-                new TotalAmount.Props(currencyId, PaymentDataHelper.getPrettyAmountToPay(paymentData),
-                    paymentData.getPayerCost());
-
-            return new PaymentMethodComponent.PaymentMethodProps(paymentData.getPaymentMethod(),
-                paymentData.getToken() != null ? paymentData.getToken().getLastFourDigits() : null,
-                statementDescription,
-                totalAmountProps);
         }
 
         @Override

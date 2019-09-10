@@ -8,7 +8,6 @@ import com.mercadopago.android.px.internal.features.paymentresult.components.Bod
 import com.mercadopago.android.px.internal.features.paymentresult.components.BodyError;
 import com.mercadopago.android.px.internal.features.paymentresult.props.PaymentResultBodyProps;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
-import com.mercadopago.android.px.internal.view.Receipt;
 import com.mercadopago.android.px.mocks.Instructions;
 import com.mercadopago.android.px.mocks.PaymentResults;
 import com.mercadopago.android.px.model.Instruction;

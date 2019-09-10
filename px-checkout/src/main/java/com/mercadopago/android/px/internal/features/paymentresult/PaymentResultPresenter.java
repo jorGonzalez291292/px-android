@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.features.paymentresult;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.mercadopago.android.px.core.MercadoPagoCheckout;
 import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
@@ -14,10 +15,9 @@ import com.mercadopago.android.px.internal.view.LinkAction;
 import com.mercadopago.android.px.internal.view.NextAction;
 import com.mercadopago.android.px.internal.view.RecoverPaymentAction;
 import com.mercadopago.android.px.internal.view.ResultCodeAction;
+import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
 import com.mercadopago.android.px.model.Action;
 import com.mercadopago.android.px.model.Instruction;
-import com.mercadopago.android.px.model.PaymentResult;
-import com.mercadopago.android.px.model.ProcessingMode;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.services.Callback;
 import com.mercadopago.android.px.tracking.internal.events.AbortEvent;
@@ -26,10 +26,10 @@ import com.mercadopago.android.px.tracking.internal.events.ContinueEvent;
 import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
 import java.util.List;
 
-/* default */ class PaymentResultPresenter extends BasePresenter<PaymentResultContract.PaymentResultView>
-    implements ActionsListener, PaymentResultContract.Actions {
+/* default */ class PaymentResultPresenter extends BasePresenter<PaymentResultContract.View>
+    implements ActionsListener, PaymentResultContract.Presenter {
 
-    private final PaymentResult paymentResult;
+    private final PaymentModel paymentModel;
     private final PaymentSettingRepository paymentSettings;
     private final InstructionsRepository instructionsRepository;
     @NonNull private final ResultViewTrack resultViewTrack;
@@ -38,28 +38,30 @@ import java.util.List;
 
     /* default */ PaymentResultPresenter(@NonNull final PaymentSettingRepository paymentSettings,
         @NonNull final InstructionsRepository instructionsRepository,
-        @NonNull final PaymentResult paymentResult) {
+        @NonNull final PaymentModel paymentModel) {
         this.paymentSettings = paymentSettings;
         this.instructionsRepository = instructionsRepository;
-        this.paymentResult = paymentResult;
+        this.paymentModel = paymentModel;
 
-        resultViewTrack =
-            new ResultViewTrack(ResultViewTrack.Style.GENERIC, paymentResult, paymentSettings.getCheckoutPreference());
+        resultViewTrack = new ResultViewTrack(ResultViewTrack.Style.GENERIC, paymentModel.getPaymentResult(),
+                paymentSettings.getCheckoutPreference());
     }
 
     @Override
-    public void attachView(final PaymentResultContract.PaymentResultView view) {
+    public void attachView(final PaymentResultContract.View view) {
         super.attachView(view);
 
-        getView().setPropPaymentResult(
+        /*getView().setPropPaymentResult(
             paymentSettings.getCheckoutPreference().getSite().getCurrencyId(),
             paymentResult,
             paymentResult.isOffPayment());
 
-        getView().notifyPropsChanged();
+        getView().notifyPropsChanged();*/
 
-        if (paymentResult.isOffPayment()) {
-            getInstructionsAsync();
+        if (paymentModel.getPaymentResult().isOffPayment()) {
+            getInstructions();
+        } else {
+            mapPaymentModel(null);
         }
     }
 
@@ -73,26 +75,21 @@ import java.util.List;
         new AbortEvent(resultViewTrack).track();
     }
 
-    private void getInstructionsAsync() {
-        instructionsRepository.getInstructions(paymentResult).enqueue(new Callback<List<Instruction>>() {
-            @Override
-            public void success(final List<Instruction> instructions) {
-                if (isViewAttached()) {
-                    if (instructions.isEmpty()) {
-                        getView().showInstructionsError();
-                    } else {
-                        resolveInstructions(instructions);
+    /* default */ void getInstructions() {
+        instructionsRepository.getInstructions(paymentModel.getPaymentResult()).enqueue(
+            new Callback<List<Instruction>>() {
+                @Override
+                public void success(final List<Instruction> instructions) {
+                    resolveInstructions(instructions);
+                }
+
+                @Override
+                public void failure(final ApiException apiException) {
+                    if (isViewAttached()) {
+                        getView().showApiExceptionError(apiException, ApiUtil.RequestOrigin.GET_INSTRUCTIONS);
+                        setFailureRecovery(() -> getInstructions());
                     }
                 }
-            }
-
-            @Override
-            public void failure(final ApiException apiException) {
-                if (isViewAttached()) {
-                    getView().showApiExceptionError(apiException, ApiUtil.RequestOrigin.GET_INSTRUCTIONS);
-                    setFailureRecovery(() -> getInstructionsAsync());
-                }
-            }
         });
     }
 
@@ -106,37 +103,37 @@ import java.util.List;
         this.failureRecovery = failureRecovery;
     }
 
-    /* default */ void resolveInstructions(final List<Instruction> instructionsList) {
-        final Instruction instruction = getInstruction(instructionsList);
-        if (instruction == null) {
+    /* default */ void resolveInstructions(final List<Instruction> instructions) {
+        final Instruction instruction = getInstruction(instructions);
+        if (isViewAttached() && instruction == null) {
             getView().showInstructionsError();
         } else {
-            //TODO fix this logic, future processing mode is not allways aggregator.
-            getView().setPropInstruction(instruction, ProcessingMode.AGGREGATOR, false);
-            getView().notifyPropsChanged();
+            mapPaymentModel(instruction);
         }
     }
 
-    private Instruction getInstruction(final List<Instruction> instructions) {
-        final Instruction instruction;
+    @Nullable
+    private Instruction getInstruction(@NonNull final List<Instruction> instructions) {
         if (instructions.size() == 1) {
-            instruction = instructions.get(0);
+            return instructions.get(0);
         } else {
-            instruction = getInstructionForType(instructions,
-                paymentResult.getPaymentData().getPaymentMethod().getPaymentTypeId());
+            return getInstructionForType(instructions,
+                paymentModel.getPaymentResult().getPaymentData().getPaymentMethod().getPaymentTypeId());
         }
-        return instruction;
     }
 
+    @Nullable
     private Instruction getInstructionForType(final Iterable<Instruction> instructions, final String paymentTypeId) {
-        Instruction instructionForType = null;
         for (final Instruction instruction : instructions) {
             if (instruction.getType().equals(paymentTypeId)) {
-                instructionForType = instruction;
-                break;
+                return instruction;
             }
         }
-        return instructionForType;
+        return null;
+    }
+
+    private void mapPaymentModel(@Nullable final Instruction instruction) {
+
     }
 
     @Override

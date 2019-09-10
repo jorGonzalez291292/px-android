@@ -6,7 +6,7 @@ import android.support.annotation.StringRes;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.model.BusinessPayment;
 
-public enum DecoratorModel {
+public enum PaymentResultType {
     APPROVED("APPROVED", R.color.ui_components_success_color,
         R.drawable.px_badge_check, 0),
     REJECTED("REJECTED", R.color.ui_components_error_color,
@@ -20,7 +20,7 @@ public enum DecoratorModel {
     public final int badge;
     public final int message;
 
-    DecoratorModel(final String name,
+    PaymentResultType(final String name,
         @ColorRes final int resColor,
         @DrawableRes final int badge,
         @StringRes final int message) {
@@ -30,7 +30,7 @@ public enum DecoratorModel {
         this.message = message;
     }
 
-    public static DecoratorModel from(final BusinessPayment.Decorator decorator) {
+    public static PaymentResultType from(final BusinessPayment.Decorator decorator) {
         switch (decorator) {
         case PENDING:
             return PENDING;
@@ -42,5 +42,4 @@ public enum DecoratorModel {
             throw new IllegalStateException("Invalid decorator");
         }
     }
-
 }

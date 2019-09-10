@@ -2,24 +2,14 @@ package com.mercadopago.android.px.internal.features.paymentresult;
 
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.base.MvpView;
-import com.mercadopago.android.px.model.Instruction;
-import com.mercadopago.android.px.model.PaymentResult;
-import com.mercadopago.android.px.model.ProcessingMode;
+import com.mercadopago.android.px.internal.features.paymentresult.viewmodel.PaymentResultViewModel;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 
 public interface PaymentResultContract {
 
-    interface PaymentResultView extends MvpView {
+    interface View extends MvpView {
 
-        void setPropPaymentResult(@NonNull final String currencyId,
-            @NonNull final PaymentResult paymentResult,
-            final boolean showLoading);
-
-        void setPropInstruction(@NonNull final Instruction instruction,
-            @NonNull final ProcessingMode processingMode,
-            final boolean showLoading);
-
-        void notifyPropsChanged();
+        void setModel(@NonNull final PaymentResultViewModel model);
 
         void showApiExceptionError(ApiException exception, String requestOrigin);
 
@@ -36,7 +26,7 @@ public interface PaymentResultContract {
         void copyToClipboard(@NonNull final String content);
     }
 
-    interface Actions {
+    interface Presenter {
 
         void freshStart();
 

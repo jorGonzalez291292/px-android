@@ -3,11 +3,11 @@ package com.mercadopago.android.px.internal.view;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import com.mercadopago.android.px.internal.util.CurrenciesUtil;
+
 import com.mercadopago.android.px.internal.util.ParcelableUtil;
 import com.mercadopago.android.px.model.PayerCost;
+
 import java.math.BigDecimal;
-import java.util.Locale;
 
 public class TotalAmount extends Component<TotalAmount.Props, Void> {
 
@@ -64,35 +64,7 @@ public class TotalAmount extends Component<TotalAmount.Props, Void> {
         super(props);
     }
 
-    public String getAmountTitle() {
-        final String amountTitle;
 
-        if (hasPayerCostWithMultipleInstallments()) {
-            final String installmentsAmount = CurrenciesUtil
-                .getLocalizedAmountWithoutZeroDecimals(props.currencyId, props.payerCost.getInstallmentAmount());
-            amountTitle = String.format(Locale.getDefault(),
-                "%dx %s",
-                props.payerCost.getInstallments(),
-                installmentsAmount);
-        } else {
-            amountTitle = CurrenciesUtil.getLocalizedAmountWithoutZeroDecimals(props.currencyId, props.amount);
-        }
 
-        return amountTitle;
-    }
 
-    public String getAmountDetail() {
-        String amountDetail = "";
-
-        if (hasPayerCostWithMultipleInstallments()) {
-            amountDetail = String.format(Locale.getDefault(), "(%s)", CurrenciesUtil
-                .getLocalizedAmountWithoutZeroDecimals(props.currencyId, props.payerCost.getTotalAmount()));
-        }
-
-        return amountDetail;
-    }
-
-    private boolean hasPayerCostWithMultipleInstallments() {
-        return props.payerCost != null && props.payerCost.hasMultipleInstallments();
-    }
 }

@@ -48,14 +48,12 @@ import com.mercadopago.android.px.internal.features.paymentresult.components.Ins
 import com.mercadopago.android.px.internal.features.paymentresult.components.InstructionsTertiaryInfo;
 import com.mercadopago.android.px.internal.features.paymentresult.components.InstructionsTertiaryInfoRenderer;
 import com.mercadopago.android.px.internal.features.paymentresult.components.PaymentResultContainer;
-import com.mercadopago.android.px.internal.features.paymentresult.props.HeaderProps;
 import com.mercadopago.android.px.internal.features.paymentresult.props.PaymentResultProps;
+import com.mercadopago.android.px.internal.features.paymentresult.viewmodel.PaymentResultViewModel;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.view.Component;
 import com.mercadopago.android.px.internal.view.ComponentManager;
-import com.mercadopago.android.px.internal.view.LoadingComponent;
-import com.mercadopago.android.px.internal.view.LoadingRenderer;
 import com.mercadopago.android.px.internal.view.RendererFactory;
 import com.mercadopago.android.px.internal.viewmodel.ChangePaymentMethodPostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
@@ -70,7 +68,7 @@ import static com.mercadopago.android.px.internal.features.Constants.RESULT_ACTI
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_CUSTOM_EXIT;
 
 public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> implements
-    PaymentResultContract.PaymentResultView {
+    PaymentResultContract.View {
 
     private static final int CONGRATS_REQUEST_CODE = 16;
     private static final int INSTRUCTIONS_REQUEST_CODE = 14;
@@ -84,10 +82,9 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
     private ComponentManager componentManager;
 
     public static Intent getIntent(@NonNull final Context context, @NonNull final PaymentModel paymentModel) {
-        final Intent resultIntent = new Intent(context, PaymentResultActivity.class);
-        //TODO remove
-        resultIntent.putExtra(EXTRA_PAYMENT_MODEL, paymentModel);
-        return resultIntent;
+        final Intent intent = new Intent(context, PaymentResultActivity.class);
+        intent.putExtra(EXTRA_PAYMENT_MODEL, paymentModel);
+        return intent;
     }
 
     @Override
@@ -95,7 +92,6 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
         super.onCreate(savedInstanceState);
 
         RendererFactory.register(Body.class, BodyRenderer.class);
-        RendererFactory.register(LoadingComponent.class, LoadingRenderer.class);
         RendererFactory.register(Instructions.class, InstructionsRenderer.class);
         RendererFactory.register(InstructionsSubtitle.class, InstructionsSubtitleRenderer.class);
         RendererFactory.register(InstructionsContent.class, InstructionsContentRenderer.class);
@@ -138,13 +134,18 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
         final Intent intent = getIntent();
         final PaymentModel paymentModel = intent.getParcelableExtra(EXTRA_PAYMENT_MODEL);
         return new PaymentResultPresenter(paymentSettings, Session.getInstance().getInstructionsRepository(),
-            paymentModel.getPaymentResult());
+            paymentModel);
     }
 
     @Override
     protected void onDestroy() {
         presenter.detachView();
         super.onDestroy();
+    }
+
+    @Override
+    public void setModel(@NonNull final PaymentResultViewModel model) {
+
     }
 
     @Override
@@ -200,9 +201,12 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
 
     @Override
     public void openLink(final String url) {
-        //TODO agregar try catch
-        final Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        startActivity(browserIntent);
+        try {
+            final Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            startActivity(browserIntent);
+        } catch (final Exception e) {
+
+        }
     }
 
     @Override
@@ -236,46 +240,9 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
         final ClipData clip = ClipData.newPlainText("", content);
         if (clipboard != null) {
             clipboard.setPrimaryClip(clip);
-            MeliSnackbar.make(findViewById(R.id.mpsdkPaymentResultContainer),
+            MeliSnackbar.make(findViewById(R.id.container),
                 getString(R.string.px_copied_to_clipboard_ack),
                 Snackbar.LENGTH_SHORT, MeliSnackbar.SnackbarType.SUCCESS).show();
-        }
-    }
-
-    @Override
-    public void setPropPaymentResult(@NonNull final String currencyId, @NonNull final PaymentResult paymentResult,
-        final boolean showLoading) {
-
-        props = props.toBuilder()
-            .setPaymentResult(paymentResult)
-            .setCurrencyId(currencyId)
-            .setHeaderMode(HeaderProps.HEADER_MODE_WRAP)
-            .setLoading(showLoading)
-            .build();
-    }
-
-    @Override
-    public void setPropInstruction(@NonNull final Instruction instruction,
-        @NonNull final ProcessingMode processingModeString,
-        final boolean showLoading) {
-
-        props = props.toBuilder()
-            .setInstruction(instruction)
-            .setLoading(showLoading)
-            .setProcessingMode(processingModeString)
-            .build();
-    }
-
-    /**
-     * @deprecated Este método tiene que ser privado, se hizo publico para poder hacer notificaciones condicionales.
-     * Esta no es la forma adecuada de hacerlo hay que definir algún mecanismo de transacciones para eso. Mejor no tener
-     * el feature a tener algo mal implementado.
-     */
-    @Override
-    @Deprecated
-    public void notifyPropsChanged() {
-        if (componentManager != null && props != null) {
-            componentManager.onProps(props);
         }
     }
 }

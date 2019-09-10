@@ -55,14 +55,6 @@ public abstract class Renderer<T extends Component> {
         return LayoutInflater.from(context).inflate(layout, parent);
     }
 
-    public void wrapHeight(@NonNull final ViewGroup viewGroup) {
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        );
-        viewGroup.setLayoutParams(params);
-    }
-
     protected void setText(@NonNull final TextView view, @StringRes final int resource) {
         try {
             String text = context.getResources().getString(resource);

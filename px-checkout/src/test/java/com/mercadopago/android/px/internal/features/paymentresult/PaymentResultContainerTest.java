@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration;
-import com.mercadopago.android.px.internal.features.paymentresult.components.Header;
 import com.mercadopago.android.px.internal.features.paymentresult.components.PaymentResultContainer;
 import com.mercadopago.android.px.internal.features.paymentresult.props.HeaderProps;
 import com.mercadopago.android.px.internal.features.paymentresult.props.PaymentResultProps;
@@ -736,7 +735,7 @@ public class PaymentResultContainerTest {
                 .build();
         container.setProps(paymentResultProps);
 
-        final Header header = container.getHeaderComponent(context);
+        final Header header = container.getHeaderModel(context);
         Assert.assertEquals(header.props.height, HeaderProps.HEADER_MODE_WRAP);
     }
 
@@ -751,7 +750,7 @@ public class PaymentResultContainerTest {
                 .build();
         container.setProps(paymentResultProps);
 
-        Header header = container.getHeaderComponent(context);
+        Header header = container.getHeaderModel(context);
         Assert.assertEquals(header.props.height, HeaderProps.HEADER_MODE_STRETCH);
     }
 
@@ -766,7 +765,7 @@ public class PaymentResultContainerTest {
                 .build();
         container.setProps(paymentResultProps);
 
-        Header header = container.getHeaderComponent(context);
+        Header header = container.getHeaderModel(context);
         Assert.assertEquals(header.props.height, HeaderProps.HEADER_MODE_STRETCH);
     }
 
@@ -782,7 +781,7 @@ public class PaymentResultContainerTest {
 
         container.setProps(paymentResultProps);
 
-        Header header = container.getHeaderComponent(context);
+        Header header = container.getHeaderModel(context);
         Assert.assertEquals(header.props.height, HeaderProps.HEADER_MODE_STRETCH);
     }
 
@@ -796,7 +795,7 @@ public class PaymentResultContainerTest {
             .build();
 
         container.setProps(paymentResultProps);
-        return container.getHeaderComponent(context).props;
+        return container.getHeaderModel(context).props;
     }
 
     private HeaderProps getHeaderPropsFromContainerWith(PaymentResult paymentResult, Instruction instruction) {
@@ -809,7 +808,7 @@ public class PaymentResultContainerTest {
                 .build();
 
         container.setProps(paymentResultProps);
-        return container.getHeaderComponent(context).props;
+        return container.getHeaderModel(context).props;
     }
 
     private PaymentResultContainer getContainer() {

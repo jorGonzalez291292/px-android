@@ -5,33 +5,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.di.Session;
-import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
+import com.mercadopago.android.px.internal.view.PaymentResultBody;
+import com.mercadopago.android.px.internal.view.PaymentResultHeader;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
-import com.mercadopago.android.px.model.Action;
 import com.mercadopago.android.px.model.ExitAction;
-import com.mercadopago.android.px.model.PaymentResult;
-import com.mercadopago.android.px.model.internal.PrimaryExitAction;
-import com.mercadopago.android.px.model.internal.SecondaryExitAction;
-import com.mercadopago.android.px.preferences.CheckoutPreference;
-import com.mercadopago.android.px.tracking.internal.events.AbortEvent;
-import com.mercadopago.android.px.tracking.internal.events.PrimaryActionEvent;
-import com.mercadopago.android.px.tracking.internal.events.SecondaryActionEvent;
-import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
-import com.mercadopago.android.px.tracking.internal.views.ViewTracker;
 
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_CUSTOM_EXIT;
 
-public class BusinessPaymentResultActivity extends PXActivity implements ActionDispatcher {
+public class BusinessPaymentResultActivity extends PXActivity<BusinessPaymentResultPresenter>
+    implements BusinessPaymentResultContract.View {
 
     private static final String EXTRA_BUSINESS_PAYMENT_MODEL = "extra_business_payment_model";
-
-    private ViewTracker viewTracker;
 
     public static Intent getIntent(@NonNull final Context context, @NonNull final BusinessPaymentModel model) {
         final Intent intent = new Intent(context, BusinessPaymentResultActivity.class);
@@ -42,71 +30,50 @@ public class BusinessPaymentResultActivity extends PXActivity implements ActionD
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final BusinessPaymentModel model = parseBusinessPaymentModel();
+        setContentView(R.layout.px_activity_business_result);
+
+        final BusinessPaymentModel model = getModel();
         if (model != null) {
-            viewTracker = createTracker(model);
-
-            final LinearLayout linearContainer = ViewUtils.createLinearContainer(this);
-            linearContainer.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT));
-            setContentView(linearContainer);
-
-            final BusinessPaymentContainer businessPaymentContainer = new BusinessPaymentContainer(model, this);
-            final View render = businessPaymentContainer.render(linearContainer);
-            linearContainer.addView(render);
+            presenter = new BusinessPaymentResultPresenter(
+                Session.getInstance().getConfigurationModule().getPaymentSettings(), model);
+            presenter.attachView(this);
+            if (savedInstanceState == null) {
+                presenter.onFreshStart();
+            }
         } else {
             throw new IllegalStateException("BusinessPayment can't be loaded");
         }
-
-        if (savedInstanceState == null) {
-            viewTracker.track();
-        }
-    }
-
-    @NonNull
-    private ViewTracker createTracker(final BusinessPaymentModel model) {
-        final CheckoutPreference checkoutPreference =
-            Session.getInstance().getConfigurationModule().getPaymentSettings().getCheckoutPreference();
-
-        return new ResultViewTrack(ResultViewTrack.Style.CUSTOM, new PaymentResult.Builder()
-            .setPaymentData(model.getPaymentResult().getPaymentDataList())
-            .setPaymentStatus(model.payment.getPaymentStatus())
-            .setPaymentStatusDetail(model.payment.getPaymentStatusDetail())
-            .setPaymentId(model.payment.getId())
-            .build(), checkoutPreference);
-    }
-
-    @Nullable
-    private BusinessPaymentModel parseBusinessPaymentModel() {
-        return getIntent().getExtras() != null ? (BusinessPaymentModel) getIntent()
-            .getExtras()
-            .getParcelable(EXTRA_BUSINESS_PAYMENT_MODEL) : null;
     }
 
     @Override
-    public void dispatch(final Action action) {
-        if (action instanceof ExitAction) {
+    public void configureViews(@NonNull final BusinessPaymentResultViewModel model,
+        @NonNull final ActionDispatcher callback) {
+        final PaymentResultHeader header = findViewById(R.id.header);
+        header.setModel(model.headerModel);
+        final PaymentResultBody body = findViewById(R.id.body);
+        body.setModel(model.bodyModel);
+        //TODO migrate
+        BusinessResultLegacyRenderer.render(findViewById(R.id.container), callback, model);
+    }
 
-            // Hack for tracking
-            if (action instanceof PrimaryExitAction) {
-                new PrimaryActionEvent(viewTracker).track();
-            } else if (action instanceof SecondaryExitAction) {
-                new SecondaryActionEvent(viewTracker).track();
-            }
-
-            processCustomExit((ExitAction) action);
-        } else {
-            throw new UnsupportedOperationException("this Action class can't be executed in this screen");
-        }
+    @Nullable
+    private BusinessPaymentModel getModel() {
+        return getIntent().getExtras() != null ?
+            getIntent().getExtras().getParcelable(EXTRA_BUSINESS_PAYMENT_MODEL) : null;
     }
 
     @Override
     public void onBackPressed() {
-        new AbortEvent(viewTracker).track();
+        presenter.onAbort();
+    }
+
+    @Override
+    public void processCustomExit() {
         processCustomExit(new ExitAction("exit", RESULT_OK));
     }
 
-    private void processCustomExit(final ExitAction action) {
+    @Override
+    public void processCustomExit(@NonNull final ExitAction action) {
         final Intent intent = action.toIntent();
         setResult(RESULT_CUSTOM_EXIT, intent);
         finish();

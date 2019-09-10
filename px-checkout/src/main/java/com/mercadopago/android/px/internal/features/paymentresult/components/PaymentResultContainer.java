@@ -7,13 +7,13 @@ import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration;
 import com.mercadopago.android.px.internal.features.PaymentResultViewModelFactory;
 import com.mercadopago.android.px.internal.features.paymentresult.model.Badge;
-import com.mercadopago.android.px.internal.features.paymentresult.props.HeaderProps;
 import com.mercadopago.android.px.internal.features.paymentresult.props.PaymentResultBodyProps;
 import com.mercadopago.android.px.internal.features.paymentresult.props.PaymentResultProps;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
 import com.mercadopago.android.px.internal.view.Component;
-import com.mercadopago.android.px.internal.view.LoadingComponent;
+import com.mercadopago.android.px.internal.view.PaymentResultHeader;
 import com.mercadopago.android.px.internal.view.RendererFactory;
+import com.mercadopago.android.px.internal.viewmodel.GenericLocalized;
 import com.mercadopago.android.px.internal.viewmodel.PaymentResultViewModel;
 import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentMethods;
@@ -44,32 +44,23 @@ public class PaymentResultContainer extends Component<PaymentResultProps, Void> 
         super(props, dispatcher);
     }
 
-    /* default */ boolean isLoading() {
-        return props.loading;
-    }
+    public PaymentResultHeader.Model getHeaderModel() {
 
-    /* default */ LoadingComponent getLoadingComponent() {
-        return new LoadingComponent();
-    }
-
-    public Header getHeaderComponent(final Context context) {
-
-        final PaymentResultViewModel
-            paymentResultViewModel =
+        final PaymentResultViewModel paymentResultViewModel =
             PaymentResultViewModelFactory.createPaymentResultViewModel(props.paymentResult);
 
-        final HeaderProps headerProps = new HeaderProps.Builder()
-            .setHeight(getHeaderMode())
+        return new PaymentResultHeader.Model.Builder()
+            .setDynamicHeight(!hasBodyComponent())
             .setBackground(paymentResultViewModel.getBackgroundResId())
             .setStatusBarColor(paymentResultViewModel.getStatusBarResId())
             .setIconImage(getIconImage(props))
             .setIconUrl(getIconUrl(props))
             .setBadgeImage(getBadgeImage(props, paymentResultViewModel))
-            .setTitle(props.hasInstructions() ? props.getInstructionsTitle() : paymentResultViewModel.getTitle(context))
-            .setLabel(paymentResultViewModel.getLabel(context))
+            .setTitle(new GenericLocalized(props.hasInstructions() ? props.getInstructionsTitle() : null,
+                paymentResultViewModel.getTitleResId()))
+            .setLabel(new GenericLocalized(null, paymentResultViewModel.getLabelResId()))
+            .setSuccess(paymentResultViewModel.isApprovedSuccess())
             .build();
-
-        return new Header(headerProps, getDispatcher());
     }
 
     public boolean hasBodyComponent() {
@@ -78,15 +69,12 @@ public class PaymentResultContainer extends Component<PaymentResultProps, Void> 
                 PaymentResultViewModelFactory.createPaymentResultViewModel(props.paymentResult);
             return paymentResultViewModel.isApprovedSuccess() || paymentResultViewModel.hasBodyError();
         }
-
         return false;
     }
 
     @Nullable
     public Body getBodyComponent() {
-        Body body = null;
         if (props.paymentResult != null) {
-
             final PaymentResultBodyProps bodyProps =
                 new PaymentResultBodyProps.Builder(props.getPaymentResultScreenPreference())
                     .setPaymentResult(props.paymentResult)
@@ -94,23 +82,13 @@ public class PaymentResultContainer extends Component<PaymentResultProps, Void> 
                     .setCurrencyId(props.currencyId)
                     .setProcessingMode(props.processingMode)
                     .build();
-            body = new Body(bodyProps, getDispatcher());
+            return new Body(bodyProps, getDispatcher());
         }
-        return body;
+        return null;
     }
 
     /* default */ FooterPaymentResult getFooterContainer() {
         return new FooterPaymentResult(props.paymentResult, getDispatcher());
-    }
-
-    private String getHeaderMode() {
-        final String headerMode;
-        if (hasBodyComponent()) {
-            headerMode = props.headerMode;
-        } else {
-            headerMode = HeaderProps.HEADER_MODE_STRETCH;
-        }
-        return headerMode;
     }
 
     @Nullable
@@ -180,7 +158,6 @@ public class PaymentResultContainer extends Component<PaymentResultProps, Void> 
     }
 
     private int getBadgeImage(@NonNull final PaymentResultProps props, @NonNull final PaymentResultViewModel viewModel) {
-
         if (props.hasCustomizedBadge()) {
             final String badge = props.getPreferenceBadge();
             switch (badge) {
