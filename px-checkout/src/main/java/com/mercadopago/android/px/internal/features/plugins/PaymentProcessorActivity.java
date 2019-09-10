@@ -45,7 +45,6 @@ public final class PaymentProcessorActivity extends AppCompatActivity
     PaymentProcessor.OnPaymentListener {
 
     private static final String TAG_PROCESSOR_FRAGMENT = "TAG_PROCESSOR_FRAGMENT";
-    private static final String EXTRA_BUSINESS_PAYMENT = "extra_business_payment";
     private static final String EXTRA_PAYMENT = "extra_payment";
     private static final String EXTRA_RECOVERY = "extra_recovery";
 
@@ -71,18 +70,17 @@ public final class PaymentProcessorActivity extends AppCompatActivity
         return new Intent(context, PaymentProcessorActivity.class);
     }
 
-    public static boolean isBusiness(@Nullable final Intent intent) {
-        return intent != null && intent.getExtras() != null && intent.getExtras().containsKey(EXTRA_BUSINESS_PAYMENT);
-    }
-
-    @Nullable
-    public static IParcelablePaymentDescriptor getPayment(final Intent intent) {
-        return (IParcelablePaymentDescriptor) intent.getExtras().get(EXTRA_PAYMENT);
-    }
-
-    @Nullable
-    public static BusinessPayment getBusinessPayment(final Intent intent) {
-        return (BusinessPayment) intent.getExtras().get(EXTRA_BUSINESS_PAYMENT);
+    @NonNull
+    public static IPaymentDescriptor getPayment(final Intent intent) {
+        IPaymentDescriptor payment = null;
+        if (intent.hasExtra(EXTRA_PAYMENT)) {
+            //noinspection ConstantConditions
+            payment = (IPaymentDescriptor) intent.getExtras().get(EXTRA_PAYMENT);
+        }
+        if (payment == null) {
+            throw new IllegalStateException("No payment passed to process");
+        }
+        return payment;
     }
 
     @Nullable
@@ -104,7 +102,8 @@ public final class PaymentProcessorActivity extends AppCompatActivity
         try {
             paymentServiceHandlerWrapper = new PaymentServiceHandlerWrapper(session.getPaymentRepository(),
                 session.getConfigurationModule().getDisabledPaymentMethodRepository(),
-                new EscPaymentManagerImp(session.getMercadoPagoESC()), session.getInstructionsRepository());
+                new EscPaymentManagerImp(session.getMercadoPagoESC()), session.getInstructionsRepository(),
+                session.getPaymentRewardRepository());
 
             if (getFragmentByTag() == null) { // if fragment is not added, then create it.
                 addPaymentProcessorFragment(getSupportFragmentManager(), session);
@@ -184,20 +183,18 @@ public final class PaymentProcessorActivity extends AppCompatActivity
 
             @Override
             public void onPaymentFinished(@NonNull final IPaymentDescriptor payment) {
-
+                final Intent intent = new Intent();
                 payment.process(new IPaymentDescriptorHandler() {
                     @Override
-                    public void visit(@NonNull final BusinessPayment businessPayment) {
-                        final Intent intent = new Intent();
-                        intent.putExtra(EXTRA_BUSINESS_PAYMENT, (Parcelable) businessPayment);
+                    public void visit(@NonNull final IPaymentDescriptor payment) {
+                        intent.putExtra(EXTRA_PAYMENT, (Parcelable) IParcelablePaymentDescriptor.with(payment));
                         setResult(RESULT_PAYMENT, intent);
                         finish();
                     }
 
                     @Override
-                    public void visit(@NonNull final IPaymentDescriptor payment) {
-                        final Intent intent = new Intent();
-                        intent.putExtra(EXTRA_PAYMENT, (Parcelable) IParcelablePaymentDescriptor.with(payment));
+                    public void visit(@NonNull final BusinessPayment businessPayment) {
+                        intent.putExtra(EXTRA_PAYMENT, (Parcelable) businessPayment);
                         setResult(RESULT_PAYMENT, intent);
                         finish();
                     }

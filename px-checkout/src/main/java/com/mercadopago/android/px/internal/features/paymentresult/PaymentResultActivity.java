@@ -58,6 +58,7 @@ import com.mercadopago.android.px.internal.view.LoadingComponent;
 import com.mercadopago.android.px.internal.view.LoadingRenderer;
 import com.mercadopago.android.px.internal.view.RendererFactory;
 import com.mercadopago.android.px.internal.viewmodel.ChangePaymentMethodPostPaymentAction;
+import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.RecoverPaymentPostPaymentAction;
 import com.mercadopago.android.px.model.Instruction;
 import com.mercadopago.android.px.model.PaymentResult;
@@ -76,16 +77,16 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
     private static final int REJECTION_REQUEST_CODE = 9;
     private static final int PENDING_REQUEST_CODE = 8;
     private static final int CALL_FOR_AUTHORIZE_REQUEST_CODE = 7;
-    private static final String EXTRA_PAYMENT_RESULT = "extra_payment_result";
+    private static final String EXTRA_PAYMENT_MODEL = "extra_payment_model";
     public static final String EXTRA_RESULT_CODE = "extra_result_code";
 
     private PaymentResultProps props;
     private ComponentManager componentManager;
 
-    public static Intent getIntent(@NonNull final Context context, @NonNull final PaymentResult result) {
+    public static Intent getIntent(@NonNull final Context context, @NonNull final PaymentModel paymentModel) {
         final Intent resultIntent = new Intent(context, PaymentResultActivity.class);
         //TODO remove
-        resultIntent.putExtra(EXTRA_PAYMENT_RESULT, result);
+        resultIntent.putExtra(EXTRA_PAYMENT_MODEL, paymentModel);
         return resultIntent;
     }
 
@@ -135,9 +136,9 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
 
     private PaymentResultPresenter createPresenter(final PaymentSettingRepository paymentSettings) {
         final Intent intent = getIntent();
-        final PaymentResult paymentResult = (PaymentResult) intent.getSerializableExtra(EXTRA_PAYMENT_RESULT);
+        final PaymentModel paymentModel = intent.getParcelableExtra(EXTRA_PAYMENT_MODEL);
         return new PaymentResultPresenter(paymentSettings, Session.getInstance().getInstructionsRepository(),
-            paymentResult);
+            paymentModel.getPaymentResult());
     }
 
     @Override
