@@ -1,8 +1,8 @@
 package com.mercadopago.android.px.internal.features.paymentresult;
 
-import com.mercadopago.android.px.internal.features.paymentresult.components.InstructionsAction;
-import com.mercadopago.android.px.internal.features.paymentresult.components.InstructionsActions;
-import com.mercadopago.android.px.internal.features.paymentresult.props.InstructionsActionsProps;
+import com.mercadopago.android.px.internal.features.payment_result.components.InstructionsAction;
+import com.mercadopago.android.px.internal.features.payment_result.components.InstructionsActions;
+import com.mercadopago.android.px.internal.features.payment_result.props.InstructionsActionsProps;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
 import com.mercadopago.android.px.mocks.Instructions;
 import com.mercadopago.android.px.model.Instruction;
@@ -13,10 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
-
-/**
- * Created by vaserber on 23/11/2017.
- */
 
 public class ActionsComponentTest {
 

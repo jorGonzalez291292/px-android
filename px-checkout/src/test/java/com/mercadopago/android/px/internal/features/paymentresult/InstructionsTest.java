@@ -1,9 +1,9 @@
 package com.mercadopago.android.px.internal.features.paymentresult;
 
-import com.mercadopago.android.px.internal.features.paymentresult.components.InstructionsContent;
-import com.mercadopago.android.px.internal.features.paymentresult.components.InstructionsSecondaryInfo;
-import com.mercadopago.android.px.internal.features.paymentresult.components.InstructionsSubtitle;
-import com.mercadopago.android.px.internal.features.paymentresult.props.InstructionsProps;
+import com.mercadopago.android.px.internal.features.payment_result.components.InstructionsContent;
+import com.mercadopago.android.px.internal.features.payment_result.components.InstructionsSecondaryInfo;
+import com.mercadopago.android.px.internal.features.payment_result.components.InstructionsSubtitle;
+import com.mercadopago.android.px.internal.features.payment_result.props.InstructionsProps;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
 import com.mercadopago.android.px.mocks.Instructions;
 import com.mercadopago.android.px.model.Instruction;
@@ -30,7 +30,7 @@ public class InstructionsTest {
     @Test
     public void testInstructionHasSubtitle() {
         final Instruction instruction = Instructions.getRapipagoInstruction();
-        final com.mercadopago.android.px.internal.features.paymentresult.components.Instructions component =
+        final com.mercadopago.android.px.internal.features.payment_result.components.Instructions component =
             getInstructionsComponent(instruction);
 
         Assert.assertNotNull(instruction.getSubtitle());
@@ -42,7 +42,7 @@ public class InstructionsTest {
     @Test
     public void testSubtitlePropsAreValid() {
         final Instruction instruction = Instructions.getRapipagoInstruction();
-        final com.mercadopago.android.px.internal.features.paymentresult.components.Instructions component =
+        final com.mercadopago.android.px.internal.features.payment_result.components.Instructions component =
             getInstructionsComponent(instruction);
 
         final InstructionsSubtitle subtitle = component.getSubtitleComponent();
@@ -53,7 +53,7 @@ public class InstructionsTest {
     @Test
     public void testContentComponentIsValid() {
         final Instruction instruction = Instructions.getRapipagoInstruction();
-        final com.mercadopago.android.px.internal.features.paymentresult.components.Instructions component =
+        final com.mercadopago.android.px.internal.features.payment_result.components.Instructions component =
             getInstructionsComponent(instruction);
 
         final InstructionsContent content = component.getContentComponent();
@@ -64,7 +64,7 @@ public class InstructionsTest {
     @Test
     public void testInstructionHasSecondaryInfo() {
         final Instruction instruction = Instructions.getRapipagoInstruction();
-        final com.mercadopago.android.px.internal.features.paymentresult.components.Instructions component =
+        final com.mercadopago.android.px.internal.features.payment_result.components.Instructions component =
             getInstructionsComponent(instruction);
 
         Assert.assertNotNull(instruction.getSecondaryInfo());
@@ -76,7 +76,7 @@ public class InstructionsTest {
     @Test
     public void testSecondaryInfoPropsAreValid() {
         final Instruction instruction = Instructions.getRapipagoInstruction();
-        final com.mercadopago.android.px.internal.features.paymentresult.components.Instructions component =
+        final com.mercadopago.android.px.internal.features.payment_result.components.Instructions component =
             getInstructionsComponent(instruction);
 
         final InstructionsSecondaryInfo secondaryInfo = component.getSecondaryInfoComponent();
@@ -88,7 +88,7 @@ public class InstructionsTest {
     @Test
     public void testOnAggregatorThenShowEmailInSecondaryInfo() {
         final Instruction instruction = Instructions.getRapipagoInstruction();
-        final com.mercadopago.android.px.internal.features.paymentresult.components.Instructions component =
+        final com.mercadopago.android.px.internal.features.payment_result.components.Instructions component =
             getInstructionsComponent(instruction);
 
         Assert.assertTrue(component.shouldShowEmailInSecondaryInfo());
@@ -102,20 +102,20 @@ public class InstructionsTest {
             .setInstruction(instruction)
             .build();
 
-        final com.mercadopago.android.px.internal.features.paymentresult.components.Instructions component =
-            new com.mercadopago.android.px.internal.features.paymentresult.components.Instructions(props, dispatcher);
+        final com.mercadopago.android.px.internal.features.payment_result.components.Instructions component =
+            new com.mercadopago.android.px.internal.features.payment_result.components.Instructions(props, dispatcher);
 
         Assert.assertFalse(component.shouldShowEmailInSecondaryInfo());
     }
 
-    private com.mercadopago.android.px.internal.features.paymentresult.components.Instructions getInstructionsComponent(
+    private com.mercadopago.android.px.internal.features.payment_result.components.Instructions getInstructionsComponent(
         Instruction instruction) {
         final InstructionsProps props = new InstructionsProps.Builder()
             .setProcessingMode(ProcessingMode.AGGREGATOR)
             .setInstruction(instruction)
             .build();
-        final com.mercadopago.android.px.internal.features.paymentresult.components.Instructions component =
-            new com.mercadopago.android.px.internal.features.paymentresult.components.Instructions(props, dispatcher);
+        final com.mercadopago.android.px.internal.features.payment_result.components.Instructions component =
+            new com.mercadopago.android.px.internal.features.payment_result.components.Instructions(props, dispatcher);
         return component;
     }
 }

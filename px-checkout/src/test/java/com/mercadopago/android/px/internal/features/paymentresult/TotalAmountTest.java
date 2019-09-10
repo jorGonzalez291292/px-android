@@ -2,7 +2,6 @@ package com.mercadopago.android.px.internal.features.paymentresult;
 
 import com.mercadopago.android.px.internal.util.CurrenciesUtil;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
-import com.mercadopago.android.px.internal.view.TotalAmount;
 import com.mercadopago.android.px.mocks.PayerCosts;
 import com.mercadopago.android.px.model.PayerCost;
 import java.math.BigDecimal;

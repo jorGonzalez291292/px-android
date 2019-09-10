@@ -1,7 +1,7 @@
 package com.mercadopago.android.px.internal.features.paymentresult;
 
-import com.mercadopago.android.px.internal.features.paymentresult.components.AccreditationComment;
-import com.mercadopago.android.px.internal.features.paymentresult.components.AccreditationTime;
+import com.mercadopago.android.px.internal.features.payment_result.components.AccreditationComment;
+import com.mercadopago.android.px.internal.features.payment_result.components.AccreditationTime;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
 import com.mercadopago.android.px.mocks.Instructions;
 import com.mercadopago.android.px.model.Instruction;
