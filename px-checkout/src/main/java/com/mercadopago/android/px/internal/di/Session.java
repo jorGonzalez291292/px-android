@@ -27,6 +27,7 @@ import com.mercadopago.android.px.internal.datasource.IdentificationService;
 import com.mercadopago.android.px.internal.datasource.InstructionsService;
 import com.mercadopago.android.px.internal.datasource.IssuersServiceImp;
 import com.mercadopago.android.px.internal.datasource.PaymentMethodsService;
+import com.mercadopago.android.px.internal.datasource.PaymentRewardRepositoryImpl;
 import com.mercadopago.android.px.internal.datasource.PaymentService;
 import com.mercadopago.android.px.internal.datasource.PluginService;
 import com.mercadopago.android.px.internal.datasource.SummaryAmountService;
@@ -47,6 +48,7 @@ import com.mercadopago.android.px.internal.repository.InstructionsRepository;
 import com.mercadopago.android.px.internal.repository.IssuersRepository;
 import com.mercadopago.android.px.internal.repository.PaymentMethodsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
+import com.mercadopago.android.px.internal.repository.PaymentRewardRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.SummaryAmountRepository;
@@ -57,6 +59,7 @@ import com.mercadopago.android.px.internal.services.CheckoutService;
 import com.mercadopago.android.px.internal.services.GatewayService;
 import com.mercadopago.android.px.internal.services.InstallmentService;
 import com.mercadopago.android.px.internal.services.InstructionsClient;
+import com.mercadopago.android.px.internal.services.PaymentRewardService;
 import com.mercadopago.android.px.internal.services.PreferenceService;
 import com.mercadopago.android.px.internal.util.LocaleUtil;
 import com.mercadopago.android.px.internal.util.RetrofitUtil;
@@ -93,6 +96,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
     private IdentificationRepository identificationRepository;
     private CheckoutPreferenceRepository checkoutPreferenceRepository;
     private PaymentMethodsRepository paymentMethodsRepository;
+    private PaymentRewardRepository paymentRewardRepository;
 
     private Session(@NonNull final Context context) {
         super(context);
@@ -177,6 +181,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
         cardTokenRepository = null;
         checkoutPreferenceRepository = null;
         paymentMethodsRepository = null;
+        paymentRewardRepository = null;
     }
 
     public GroupsRepository getGroupsRepository() {
@@ -415,5 +420,14 @@ public final class Session extends ApplicationModule implements AmountComponent 
                 new PaymentMethodsService(getConfigurationModule().getPaymentSettings(), checkoutService);
         }
         return paymentMethodsRepository;
+    }
+
+    public PaymentRewardRepository getPaymentRewardRepository() {
+        if (paymentRewardRepository == null) {
+            final PaymentRewardService paymentRewardService =
+                RetrofitUtil.getRetrofitClient(getApplicationContext()).create(PaymentRewardService.class);
+            paymentRewardRepository = new PaymentRewardRepositoryImpl(paymentRewardService);
+        }
+        return paymentRewardRepository;
     }
 }
