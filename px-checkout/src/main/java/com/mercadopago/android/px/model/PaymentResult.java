@@ -18,6 +18,7 @@ public class PaymentResult implements Serializable {
     private final List<PaymentData> paymentDataList;
     private final String paymentMethodId;
     private final PaymentData paymentData;
+    private final PaymentReward
 
     /* default */ PaymentResult(final Builder builder) {
         paymentData = builder.paymentData;

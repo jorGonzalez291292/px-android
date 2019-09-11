@@ -426,7 +426,8 @@ public final class Session extends ApplicationModule implements AmountComponent 
         if (paymentRewardRepository == null) {
             final PaymentRewardService paymentRewardService =
                 RetrofitUtil.getRetrofitClient(getApplicationContext()).create(PaymentRewardService.class);
-            paymentRewardRepository = new PaymentRewardRepositoryImpl(paymentRewardService);
+            final PaymentSettingRepository paymentSettings = getConfigurationModule().getPaymentSettings();
+            paymentRewardRepository = new PaymentRewardRepositoryImpl(paymentRewardService, paymentSettings.getPrivateKey());
         }
         return paymentRewardRepository;
     }

@@ -7,6 +7,7 @@ import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
 import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
 import com.mercadopago.android.px.internal.configuration.InternalConfiguration;
+import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.navigation.DefaultPaymentMethodDriver;
 import com.mercadopago.android.px.internal.navigation.OnChangePaymentMethodDriver;
 import com.mercadopago.android.px.internal.repository.CheckoutPreferenceRepository;
@@ -32,8 +33,10 @@ import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.CheckoutPreferenceException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.model.internal.PaymentReward;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
+import java.util.Collections;
 import java.util.List;
 
 public class CheckoutPresenter extends BasePresenter<Checkout.View> implements PaymentServiceHandler,
@@ -435,6 +438,23 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
 
     @Override
     public void onPaymentFinished(@NonNull final IPaymentDescriptor payment) {
+        Session.getInstance().getPaymentRewardRepository()
+            .getPaymentReward(Collections.singletonList(String.valueOf(payment.getId()))).enqueue(
+            new Callback<PaymentReward>() {
+                @Override
+                public void success(final PaymentReward paymentReward) {
+                    handleResult(payment, paymentReward);
+                }
+
+                @Override
+                public void failure(final ApiException apiException) {
+                    handleResult(payment, new PaymentReward());
+                }
+            });
+    }
+
+    /* default */ void handleResult(@NonNull final IPaymentDescriptor payment,
+        @NonNull final PaymentReward paymentReward) {
         payment.process(new IPaymentDescriptorHandler() {
             @Override
             public void visit(@NonNull final IPaymentDescriptor payment) {

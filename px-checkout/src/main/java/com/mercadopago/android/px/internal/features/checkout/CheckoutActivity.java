@@ -333,7 +333,7 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
 
     private void handlePayment(final Intent data) {
         showProgress();
-        paymentResultOk(data);
+        presenter.onPaymentFinished(PaymentProcessorActivity.getPayment(data));
     }
 
     private void handleCancel() {
@@ -359,22 +359,6 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
         } else {
             //Normal exit - Result screen.
             presenter.onPaymentResultResponse();
-        }
-    }
-
-    /**
-     * Depending on intent data it triggers {@link com.mercadopago.android.px.internal.features.paymentresult.PaymentResultActivity}
-     * flow or {@link BusinessPaymentResultActivity}.
-     *
-     * @param data intent data that can contains a {@link BusinessPayment}
-     */
-    private void paymentResultOk(final Intent data) {
-        if (PaymentProcessorActivity.isBusiness(data)) {
-            final BusinessPayment businessPayment = PaymentProcessorActivity.getBusinessPayment(data);
-            presenter.onPaymentFinished(businessPayment);
-        } else {
-            final IPaymentDescriptor payment = PaymentProcessorActivity.getPayment(data);
-            presenter.onPaymentFinished(payment);
         }
     }
 
