@@ -18,7 +18,9 @@ import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.util.PreferenceValidator;
+import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.CheckoutStateModel;
+import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper;
 import com.mercadopago.android.px.model.BusinessPayment;
@@ -239,13 +241,15 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
 
     private void resolvePaymentFailure(final MercadoPagoError mercadoPagoError) {
         if (mercadoPagoError != null && mercadoPagoError.isPaymentProcessing()) {
+            final String currencyId = paymentSettingRepository.getCheckoutPreference().getSite().getCurrencyId();
             final PaymentResult paymentResult =
                 new PaymentResult.Builder()
                     .setPaymentData(paymentRepository.getPaymentDataList())
                     .setPaymentStatus(Payment.StatusCodes.STATUS_IN_PROCESS)
                     .setPaymentStatusDetail(Payment.StatusDetail.STATUS_DETAIL_PENDING_CONTINGENCY)
                     .build();
-            getView().showPaymentResult(paymentResult);
+            final PaymentModel paymentModel = new PaymentModel(null, paymentResult, PaymentReward.EMPTY, currencyId);
+            getView().showPaymentResult(paymentModel);
         } else if (mercadoPagoError != null && mercadoPagoError.isInternalServerError()) {
             setFailureRecovery(() -> getView().startPayment());
             getView().showError(mercadoPagoError);
@@ -439,33 +443,27 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
     @Override
     public void onPaymentFinished(@NonNull final IPaymentDescriptor payment) {
         Session.getInstance().getPaymentRewardRepository()
-            .getPaymentReward(Collections.singletonList(String.valueOf(payment.getId()))).enqueue(
-            new Callback<PaymentReward>() {
-                @Override
-                public void success(final PaymentReward paymentReward) {
-                    handleResult(payment, paymentReward);
-                }
-
-                @Override
-                public void failure(final ApiException apiException) {
-                    handleResult(payment, new PaymentReward());
-                }
-            });
+            .getPaymentReward(Collections.singletonList(payment), this::handleResult);
     }
 
     /* default */ void handleResult(@NonNull final IPaymentDescriptor payment,
         @NonNull final PaymentReward paymentReward) {
+        final PaymentResult paymentResult = paymentRepository.createPaymentResult(payment);
+        final String currencyId = paymentSettingRepository.getCheckoutPreference().getSite().getCurrencyId();
         payment.process(new IPaymentDescriptorHandler() {
             @Override
             public void visit(@NonNull final IPaymentDescriptor payment) {
                 getView().hideProgress();
-                getView().showPaymentResult(paymentRepository.createPaymentResult(payment));
+                final PaymentModel paymentModel = new PaymentModel(payment, paymentResult, paymentReward, currencyId);
+                getView().showPaymentResult(paymentModel);
             }
 
             @Override
             public void visit(@NonNull final BusinessPayment businessPayment) {
                 getView().hideProgress();
-                getView().showBusinessResult(businessModelMapper.map(businessPayment));
+                final BusinessPaymentModel paymentModel =
+                    new BusinessPaymentModel(businessPayment, paymentResult, paymentReward, currencyId);
+                getView().showBusinessResult(paymentModel);
             }
         });
     }

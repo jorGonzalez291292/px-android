@@ -15,6 +15,7 @@ import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
+import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.PayButtonViewModelMapper;
@@ -25,6 +26,7 @@ import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.model.internal.PaymentReward;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.tracking.internal.events.ChangePaymentMethodEvent;
 import com.mercadopago.android.px.tracking.internal.events.ConfirmEvent;
@@ -92,7 +94,10 @@ import java.util.Set;
         if (payment instanceof BusinessPayment) {
             getView().showResult(businessModelMapper.map((BusinessPayment) payment));
         } else {
-            getView().showResult(paymentRepository.createPaymentResult(payment));
+            final String currencyId = paymentSettings.getCheckoutPreference().getSite().getCurrencyId();
+            final PaymentResult paymentResult = paymentRepository.createPaymentResult(payment);
+            final PaymentModel paymentModel = new PaymentModel(payment, paymentResult, PaymentReward.EMPTY, currencyId);
+            getView().showResult(paymentModel);
         }
     }
 
@@ -209,15 +214,16 @@ import java.util.Set;
                 pay();
             }
         };
-
         if (error.isPaymentProcessing()) {
+            final String currencyId = paymentSettings.getCheckoutPreference().getSite().getCurrencyId();
             final PaymentResult paymentResult =
                 new PaymentResult.Builder()
                     .setPaymentData(paymentRepository.getPaymentDataList())
                     .setPaymentStatus(Payment.StatusCodes.STATUS_IN_PROCESS)
                     .setPaymentStatusDetail(Payment.StatusDetail.STATUS_DETAIL_PENDING_CONTINGENCY)
                     .build();
-            getView().showResult(paymentResult);
+            final PaymentModel paymentModel = new PaymentModel(null, paymentResult, PaymentReward.EMPTY, currencyId);
+            getView().showResult(paymentModel);
         } else if (error.isInternalServerError() || error.isNoConnectivityError()) {
             getView().showErrorSnackBar(error);
         } else {

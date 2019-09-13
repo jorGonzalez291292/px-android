@@ -50,6 +50,7 @@ import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.model.internal.PaymentReward;
 import com.mercadopago.android.px.model.internal.SummaryInfo;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
@@ -415,6 +416,10 @@ import java.util.Set;
         if (payment != null) {
             getView().showPaymentResult(payment);
         }
+    }
+
+    public void handlePayment(IPaymentDescriptor payment, PaymentReward reward) {
+
     }
 
     private void cancelLoading() {

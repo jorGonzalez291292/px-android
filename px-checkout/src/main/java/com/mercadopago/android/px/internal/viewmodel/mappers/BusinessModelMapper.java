@@ -20,8 +20,6 @@ public class BusinessModelMapper extends Mapper<BusinessPayment, BusinessPayment
 
     @Override
     public BusinessPaymentModel map(@NonNull final BusinessPayment val) {
-        return new BusinessPaymentModel(val,
-            paymentSettingRepository.getCheckoutPreference().getSite().getCurrencyId(),
-            paymentRepository.getPaymentDataList());
+        return null;
     }
 }
