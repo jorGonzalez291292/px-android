@@ -39,12 +39,12 @@ public class PaymentRewardRepositoryImpl implements PaymentRewardRepository {
         } else if (TextUtil.isNotEmpty(privateKey)) {
             newCall(paymentIds, serviceCallback);
         } else {
-            paymentRewardCallback.handlePayment(paymentIds.get(0), PaymentReward.EMPTY);
+            paymentRewardCallback.handleResult(paymentIds.get(0), PaymentReward.EMPTY);
         }
     }
 
     private void newCall(@NonNull final List<IPaymentDescriptor> paymentIds,
-        final Callback<PaymentReward> serviceCallback) {
+        @NonNull final Callback<PaymentReward> serviceCallback) {
         final String joinedPaymentIds = TextUtils.join(DELIMITER, paymentIds);
         paymentRewardService.getPaymentReward(API_ENVIRONMENT, privateKey, joinedPaymentIds, PLATFORM)
             .enqueue(serviceCallback);
@@ -55,12 +55,12 @@ public class PaymentRewardRepositoryImpl implements PaymentRewardRepository {
         return new Callback<PaymentReward>() {
             @Override
             public void success(final PaymentReward paymentReward) {
-                paymentRewardCallback.handlePayment(paymentIds.get(0), paymentReward);
+                paymentRewardCallback.handleResult(paymentIds.get(0), paymentReward);
             }
 
             @Override
             public void failure(final ApiException apiException) {
-                paymentRewardCallback.handlePayment(paymentIds.get(0), PaymentReward.EMPTY);
+                paymentRewardCallback.handleResult(paymentIds.get(0), PaymentReward.EMPTY);
             }
         };
     }

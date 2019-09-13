@@ -2,30 +2,17 @@ package com.mercadopago.android.px.model.internal;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 import com.mercadopago.android.px.internal.util.ParcelableUtil;
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 
 public final class PaymentReward implements Parcelable {
 
     public static final PaymentReward EMPTY = new PaymentReward();
-
-    @SerializedName("mpuntos")
-    @Nullable private final Score score;
-    @SerializedName("discounts")
-    @Nullable private final Discount discount;
-
-    private PaymentReward() {
-        score = null;
-        discount = null;
-    }
-
-    /* default */ PaymentReward(final Parcel in) {
-        score = in.readParcelable(Score.class.getClassLoader());
-        discount = in.readParcelable(Discount.class.getClassLoader());
-    }
 
     public static final Creator<PaymentReward> CREATOR = new Creator<PaymentReward>() {
         @Override
@@ -39,15 +26,50 @@ public final class PaymentReward implements Parcelable {
         }
     };
 
-    @Override
-    public int describeContents() {
-        return 0;
+    @SerializedName("mpuntos")
+    @Nullable private final Score score;
+    @SerializedName("discounts")
+    @Nullable private final Discount discount;
+    @SerializedName("cross_selling")
+    private final List<CrossSelling> crossSellings;
+
+    private PaymentReward() {
+        score = null;
+        discount = null;
+        crossSellings = Collections.emptyList();
+    }
+
+    /* default */ PaymentReward(final Parcel in) {
+        score = in.readParcelable(Score.class.getClassLoader());
+        discount = in.readParcelable(Discount.class.getClassLoader());
+        crossSellings = in.createTypedArrayList(CrossSelling.CREATOR);
     }
 
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeParcelable(score, flags);
         dest.writeParcelable(discount, flags);
+        dest.writeTypedList(crossSellings);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Nullable
+    public Score getScore() {
+        return score;
+    }
+
+    @Nullable
+    public Discount getDiscount() {
+        return discount;
+    }
+
+    @NonNull
+    public List<CrossSelling> getCrossSellings() {
+        return crossSellings != null ? crossSellings : Collections.emptyList();
     }
 
     /* default */ static final class Score implements Parcelable {
@@ -137,55 +159,6 @@ public final class PaymentReward implements Parcelable {
             }
         }
 
-        /* default */ static final class Action implements Parcelable {
-
-            public static final Creator<Action> CREATOR = new Creator<Action>() {
-                @Override
-                public Action createFromParcel(final Parcel in) {
-                    return new Action(in);
-                }
-
-                @Override
-                public Action[] newArray(final int size) {
-                    return new Action[size];
-                }
-            };
-
-            private final String label;
-            private final String mlTarget;
-            private final String mpTarget;
-
-            /* default */ Action(final Parcel in) {
-                label = in.readString();
-                mlTarget = in.readString();
-                mpTarget = in.readString();
-            }
-
-            @Override
-            public void writeToParcel(final Parcel dest, final int flags) {
-                dest.writeString(mlTarget);
-                dest.writeString(label);
-                dest.writeString(mpTarget);
-            }
-
-            @Override
-            public int describeContents() {
-                return 0;
-            }
-
-            public String getLabel() {
-                return label;
-            }
-
-            public String getMlTarget() {
-                return mlTarget;
-            }
-
-            public String getMpTarget() {
-                return mpTarget;
-            }
-        }
-
         public Progress getProgress() {
             return progress;
         }
@@ -214,67 +187,31 @@ public final class PaymentReward implements Parcelable {
         };
 
         private final String title;
+        private final String subtitle;
         private final Action action;
+        private final Action actionDownload;
         private final List<Item> items;
 
         /* default */ Discount(final Parcel in) {
             title = in.readString();
+            subtitle = in.readString();
             action = in.readParcelable(Action.class.getClassLoader());
+            actionDownload = in.readParcelable(Action.class.getClassLoader());
             items = in.createTypedArrayList(Item.CREATOR);
         }
 
         @Override
         public void writeToParcel(final Parcel dest, final int flags) {
             dest.writeString(title);
+            dest.writeString(subtitle);
             dest.writeParcelable(action, flags);
+            dest.writeParcelable(actionDownload, flags);
             dest.writeTypedList(items);
         }
 
         @Override
         public int describeContents() {
             return 0;
-        }
-
-        /* default */ static final class Action implements Parcelable {
-
-            public static final Creator<Action> CREATOR = new Creator<Action>() {
-                @Override
-                public Action createFromParcel(final Parcel in) {
-                    return new Action(in);
-                }
-
-                @Override
-                public Action[] newArray(final int size) {
-                    return new Action[size];
-                }
-            };
-
-            private final String label;
-            private final String target;
-
-            /* default */ Action(final Parcel in) {
-                label = in.readString();
-                target = in.readString();
-            }
-
-            @Override
-            public void writeToParcel(final Parcel dest, final int flags) {
-                dest.writeString(label);
-                dest.writeString(target);
-            }
-
-            @Override
-            public int describeContents() {
-                return 0;
-            }
-
-            public String getLabel() {
-                return label;
-            }
-
-            public String getTarget() {
-                return target;
-            }
         }
 
         /* default */ static final class Item implements Parcelable {
@@ -293,14 +230,12 @@ public final class PaymentReward implements Parcelable {
 
             private final String title;
             private final String subtitle;
-            private final String boldText;
             private final String icon;
             private final String target;
 
             /* default */ Item(final Parcel in) {
                 title = in.readString();
                 subtitle = in.readString();
-                boldText = in.readString();
                 icon = in.readString();
                 target = in.readString();
             }
@@ -309,7 +244,6 @@ public final class PaymentReward implements Parcelable {
             public void writeToParcel(final Parcel dest, final int flags) {
                 dest.writeString(title);
                 dest.writeString(subtitle);
-                dest.writeString(boldText);
                 dest.writeString(icon);
                 dest.writeString(target);
             }
@@ -325,10 +259,6 @@ public final class PaymentReward implements Parcelable {
 
             public String getSubtitle() {
                 return subtitle;
-            }
-
-            public String getBoldText() {
-                return boldText;
             }
 
             public String getIcon() {
@@ -350,6 +280,104 @@ public final class PaymentReward implements Parcelable {
 
         public List<Item> getItems() {
             return items;
+        }
+    }
+
+    /* default */ static final class Action implements Parcelable {
+
+        public static final Creator<Action> CREATOR = new Creator<Action>() {
+            @Override
+            public Action createFromParcel(final Parcel in) {
+                return new Action(in);
+            }
+
+            @Override
+            public Action[] newArray(final int size) {
+                return new Action[size];
+            }
+        };
+
+        private final String label;
+        private final String target;
+
+        /* default */ Action(final Parcel in) {
+            label = in.readString();
+            target = in.readString();
+        }
+
+        @Override
+        public void writeToParcel(final Parcel dest, final int flags) {
+            dest.writeString(label);
+            dest.writeString(target);
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public String getTarget() {
+            return target;
+        }
+    }
+
+    /* default */ static final class CrossSelling implements Parcelable {
+
+        public static final Creator<CrossSelling> CREATOR = new Creator<CrossSelling>() {
+            @Override
+            public CrossSelling createFromParcel(final Parcel in) {
+                return new CrossSelling(in);
+            }
+
+            @Override
+            public CrossSelling[] newArray(final int size) {
+                return new CrossSelling[size];
+            }
+        };
+
+        private final String title;
+        private final String icon;
+        private final Action action;
+        private final String contentId;
+
+        /* default */ CrossSelling(final Parcel in) {
+            title = in.readString();
+            icon = in.readString();
+            action = in.readParcelable(Action.class.getClassLoader());
+            contentId = in.readString();
+        }
+
+        @Override
+        public void writeToParcel(final Parcel dest, final int flags) {
+            dest.writeString(title);
+            dest.writeString(icon);
+            dest.writeParcelable(action, flags);
+            dest.writeString(contentId);
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public String getIcon() {
+            return icon;
+        }
+
+        public Action getAction() {
+            return action;
+        }
+
+        public String getContentId() {
+            return contentId;
         }
     }
 }

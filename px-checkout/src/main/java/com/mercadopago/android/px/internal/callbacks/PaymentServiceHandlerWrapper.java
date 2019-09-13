@@ -3,6 +3,7 @@ package com.mercadopago.android.px.internal.callbacks;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.repository.DisabledPaymentMethodRepository;
 import com.mercadopago.android.px.internal.repository.EscPaymentManager;
 import com.mercadopago.android.px.internal.repository.InstructionsRepository;
@@ -20,6 +21,7 @@ import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.services.Callback;
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -123,8 +125,11 @@ public final class PaymentServiceHandlerWrapper implements PaymentServiceHandler
 
     @Override
     public void onPaymentFinished(@NonNull final IPaymentDescriptor payment) {
-        // TODO remove - v5 when paymentTypeId is mandatory for payments
-        payment.process(getHandler());
+        Session.getInstance().getPaymentRewardRepository().getPaymentReward(Collections.singletonList(payment),
+            (payment1, paymentReward) -> {
+                // TODO remove - v5 when paymentTypeId is mandatory for payments
+                payment.process(getHandler());
+            });
     }
 
     /* default */

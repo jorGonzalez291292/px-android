@@ -446,7 +446,7 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
             .getPaymentReward(Collections.singletonList(payment), this::handleResult);
     }
 
-    /* default */ void handleResult(@NonNull final IPaymentDescriptor payment,
+    private void handleResult(@NonNull final IPaymentDescriptor payment,
         @NonNull final PaymentReward paymentReward) {
         final PaymentResult paymentResult = paymentRepository.createPaymentResult(payment);
         final String currencyId = paymentSettingRepository.getCheckoutPreference().getSite().getCurrencyId();

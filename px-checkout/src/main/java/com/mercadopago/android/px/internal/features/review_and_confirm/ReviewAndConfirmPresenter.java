@@ -9,6 +9,7 @@ import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.core.ProductIdProvider;
+import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecoratorMapper;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
@@ -34,6 +35,7 @@ import com.mercadopago.android.px.tracking.internal.events.ChangePaymentMethodEv
 import com.mercadopago.android.px.tracking.internal.events.ConfirmEvent;
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
 import com.mercadopago.android.px.tracking.internal.views.ReviewAndConfirmViewTracker;
+import java.util.Collections;
 import java.util.Set;
 
 /* default */ final class ReviewAndConfirmPresenter extends BasePresenter<ReviewAndConfirm.View>
@@ -92,21 +94,27 @@ import java.util.Set;
 
     @Override
     public void hasFinishPaymentAnimation() {
-        final String currencyId = paymentSettings.getCheckoutPreference().getSite().getCurrencyId();
         final IPaymentDescriptor payment = paymentRepository.getPayment();
+        Session.getInstance().getPaymentRewardRepository()
+            .getPaymentReward(Collections.singletonList(payment), this::handleResult);
+    }
+
+    private void handleResult(@NonNull final IPaymentDescriptor payment,
+        @NonNull final PaymentReward paymentReward) {
+        final String currencyId = paymentSettings.getCheckoutPreference().getSite().getCurrencyId();
         final PaymentResult paymentResult = paymentRepository.createPaymentResult(payment);
         payment.process(new IPaymentDescriptorHandler() {
             @Override
             public void visit(@NonNull final IPaymentDescriptor payment) {
                 final PaymentModel paymentModel =
-                    new PaymentModel(payment, paymentResult, PaymentReward.EMPTY, currencyId);
+                    new PaymentModel(payment, paymentResult, paymentReward, currencyId);
                 getView().showResult(paymentModel);
             }
 
             @Override
             public void visit(@NonNull final BusinessPayment businessPayment) {
                 final BusinessPaymentModel paymentModel =
-                    new BusinessPaymentModel((BusinessPayment) payment, paymentResult, PaymentReward.EMPTY, currencyId);
+                    new BusinessPaymentModel((BusinessPayment) payment, paymentResult, paymentReward, currencyId);
                 getView().showResult(paymentModel);
             }
         });
@@ -219,12 +227,7 @@ import java.util.Set;
         getView().cancelLoadingButton();
         getView().showConfirmButton();
 
-        recovery = new FailureRecovery() {
-            @Override
-            public void recover() {
-                pay();
-            }
-        };
+        recovery = this::pay;
         if (error.isPaymentProcessing()) {
             final String currencyId = paymentSettings.getCheckoutPreference().getSite().getCurrencyId();
             final PaymentResult paymentResult =
