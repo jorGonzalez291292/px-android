@@ -13,7 +13,7 @@ import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class GroupsDiskCache implements GroupsCache {
+public class GroupsDiskCache implements Cache<PaymentMethodSearch> {
 
     @NonNull private final FileManager fileManager;
     @NonNull private final JsonUtil jsonUtil;

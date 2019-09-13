@@ -32,10 +32,11 @@ import com.mercadopago.android.px.internal.datasource.PaymentService;
 import com.mercadopago.android.px.internal.datasource.PluginService;
 import com.mercadopago.android.px.internal.datasource.SummaryAmountService;
 import com.mercadopago.android.px.internal.datasource.TokenizeService;
-import com.mercadopago.android.px.internal.datasource.cache.GroupsCache;
+import com.mercadopago.android.px.internal.datasource.cache.Cache;
 import com.mercadopago.android.px.internal.datasource.cache.GroupsCacheCoordinator;
 import com.mercadopago.android.px.internal.datasource.cache.GroupsDiskCache;
 import com.mercadopago.android.px.internal.datasource.cache.GroupsMemCache;
+import com.mercadopago.android.px.internal.datasource.cache.PaymentRewardMemCache;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.BankDealsRepository;
@@ -66,6 +67,8 @@ import com.mercadopago.android.px.internal.util.RetrofitUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper;
 import com.mercadopago.android.px.model.Device;
+import com.mercadopago.android.px.model.PaymentMethodSearch;
+import com.mercadopago.android.px.model.internal.PaymentReward;
 import com.mercadopago.android.px.services.MercadoPagoServices;
 import com.mercadopago.android.px.tracking.internal.MPTracker;
 
@@ -85,7 +88,8 @@ public final class Session extends ApplicationModule implements AmountComponent 
     private GroupsRepository groupsRepository;
     private PaymentRepository paymentRepository;
     private AmountConfigurationRepository amountConfigurationRepository;
-    private GroupsCache groupsCache;
+    private Cache<PaymentMethodSearch> groupsCache;
+    private Cache<PaymentReward> paymentRewardCache;
     private PluginService pluginRepository;
     private InternalConfiguration internalConfiguration;
     private InstructionsService instructionsRepository;
@@ -166,6 +170,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
     private void clear() {
         getConfigurationModule().reset();
         getGroupsCache().evict();
+        getPaymentRewardCache().evict();
         configurationModule = null;
         discountRepository = null;
         amountRepository = null;
@@ -275,13 +280,20 @@ public final class Session extends ApplicationModule implements AmountComponent 
     }
 
     @NonNull
-    private GroupsCache getGroupsCache() {
+    private Cache<PaymentMethodSearch> getGroupsCache() {
         if (groupsCache == null) {
             groupsCache =
                 new GroupsCacheCoordinator(new GroupsDiskCache(getFileManager(), getJsonUtil(), getCacheDir()),
                     new GroupsMemCache());
         }
         return groupsCache;
+    }
+
+    private Cache<PaymentReward> getPaymentRewardCache() {
+        if (paymentRewardCache == null) {
+            paymentRewardCache = new PaymentRewardMemCache();
+        }
+        return paymentRewardCache;
     }
 
     @NonNull
@@ -427,7 +439,9 @@ public final class Session extends ApplicationModule implements AmountComponent 
             final PaymentRewardService paymentRewardService =
                 RetrofitUtil.getRetrofitClient(getApplicationContext()).create(PaymentRewardService.class);
             final PaymentSettingRepository paymentSettings = getConfigurationModule().getPaymentSettings();
-            paymentRewardRepository = new PaymentRewardRepositoryImpl(paymentRewardService, paymentSettings.getPrivateKey());
+            paymentRewardRepository =
+                new PaymentRewardRepositoryImpl(getPaymentRewardCache(), paymentRewardService,
+                    paymentSettings.getPrivateKey());
         }
         return paymentRewardRepository;
     }

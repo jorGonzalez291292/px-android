@@ -7,9 +7,9 @@ import com.mercadopago.android.px.model.internal.PaymentReward;
 import java.util.List;
 
 public interface PaymentRewardRepository {
-    void getPaymentReward(@NonNull List<IPaymentDescriptor> paymentIds, Callback callback);
+    void getPaymentReward(@NonNull List<IPaymentDescriptor> paymentIds, PaymentRewardCallback callback);
 
-    interface Callback {
+    interface PaymentRewardCallback {
         void handlePayment(IPaymentDescriptor payment, PaymentReward paymentReward);
     }
 }

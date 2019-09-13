@@ -14,6 +14,7 @@ import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
+import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
@@ -22,6 +23,7 @@ import com.mercadopago.android.px.internal.viewmodel.mappers.PayButtonViewModelM
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
+import com.mercadopago.android.px.model.IPaymentDescriptorHandler;
 import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentResult;
@@ -90,15 +92,24 @@ import java.util.Set;
 
     @Override
     public void hasFinishPaymentAnimation() {
+        final String currencyId = paymentSettings.getCheckoutPreference().getSite().getCurrencyId();
         final IPaymentDescriptor payment = paymentRepository.getPayment();
-        if (payment instanceof BusinessPayment) {
-            getView().showResult(businessModelMapper.map((BusinessPayment) payment));
-        } else {
-            final String currencyId = paymentSettings.getCheckoutPreference().getSite().getCurrencyId();
-            final PaymentResult paymentResult = paymentRepository.createPaymentResult(payment);
-            final PaymentModel paymentModel = new PaymentModel(payment, paymentResult, PaymentReward.EMPTY, currencyId);
-            getView().showResult(paymentModel);
-        }
+        final PaymentResult paymentResult = paymentRepository.createPaymentResult(payment);
+        payment.process(new IPaymentDescriptorHandler() {
+            @Override
+            public void visit(@NonNull final IPaymentDescriptor payment) {
+                final PaymentModel paymentModel =
+                    new PaymentModel(payment, paymentResult, PaymentReward.EMPTY, currencyId);
+                getView().showResult(paymentModel);
+            }
+
+            @Override
+            public void visit(@NonNull final BusinessPayment businessPayment) {
+                final BusinessPaymentModel paymentModel =
+                    new BusinessPaymentModel((BusinessPayment) payment, paymentResult, PaymentReward.EMPTY, currencyId);
+                getView().showResult(paymentModel);
+            }
+        });
     }
 
     @Override

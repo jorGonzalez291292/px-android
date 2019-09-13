@@ -184,6 +184,13 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
     }
 
     @Override
+    public void showPaymentResult(final PaymentModel paymentModel) {
+        overrideTransitionIn();
+        final Intent intent = PaymentResultActivity.getIntent(this, paymentModel);
+        showResult(intent, REQ_CONGRATS);
+    }
+
+    @Override
     public void showBusinessResult(@NonNull final BusinessPaymentModel model) {
         overrideTransitionIn();
         final Intent intent = BusinessPaymentResultActivity.getIntent(this, model);
@@ -197,7 +204,7 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
         if (fragment != null) {
             fragment.startActivityForResult(intent, requestCode);
         } else {
-            startActivityForResult(intent, REQ_CONGRATS_BUSINESS);
+            startActivityForResult(intent, requestCode);
         }
     }
 
@@ -434,13 +441,6 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
         if (isActive()) {
             PaymentVaultActivity.start(this, REQ_PAYMENT_VAULT);
         }
-    }
-
-    @Override
-    public void showPaymentResult(final PaymentModel paymentModel) {
-        overrideTransitionIn();
-        final Intent intent = PaymentResultActivity.getIntent(this, paymentModel);
-        showResult(intent, REQ_CONGRATS);
     }
 
     @Override
