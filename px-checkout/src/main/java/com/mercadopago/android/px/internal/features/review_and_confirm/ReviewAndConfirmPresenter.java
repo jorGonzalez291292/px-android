@@ -9,17 +9,16 @@ import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.core.ProductIdProvider;
-import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecoratorMapper;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
+import com.mercadopago.android.px.internal.repository.PaymentRewardRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
-import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.PayButtonViewModelMapper;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Card;
@@ -41,9 +40,9 @@ import java.util.Set;
 /* default */ final class ReviewAndConfirmPresenter extends BasePresenter<ReviewAndConfirm.View>
     implements ReviewAndConfirm.Action {
 
-    @NonNull private final BusinessModelMapper businessModelMapper;
     @NonNull private final PaymentSettingRepository paymentSettings;
     @NonNull private final UserSelectionRepository userSelectionRepository;
+    @NonNull private final PaymentRewardRepository paymentRewardRepository;
     @NonNull private final ProductIdProvider productIdProvider;
     @NonNull private final SecurityBehaviour securityBehaviour;
     @NonNull /* default */ final PaymentRepository paymentRepository;
@@ -54,17 +53,17 @@ import java.util.Set;
     private FailureRecovery recovery;
 
     /* default */ ReviewAndConfirmPresenter(@NonNull final PaymentRepository paymentRepository,
-        @NonNull final BusinessModelMapper businessModelMapper,
         @NonNull final DiscountRepository discountRepository,
         @NonNull final PaymentSettingRepository paymentSettings,
         @NonNull final UserSelectionRepository userSelectionRepository,
+        @NonNull final PaymentRewardRepository paymentRewardRepository,
         @NonNull final ESCManagerBehaviour escManagerBehaviour,
         @NonNull final ProductIdProvider productIdProvider,
         @NonNull final SecurityBehaviour securityBehaviour) {
         this.paymentRepository = paymentRepository;
-        this.businessModelMapper = businessModelMapper;
         this.paymentSettings = paymentSettings;
         this.userSelectionRepository = userSelectionRepository;
+        this.paymentRewardRepository = paymentRewardRepository;
         this.productIdProvider = productIdProvider;
         this.securityBehaviour = securityBehaviour;
 
@@ -95,8 +94,7 @@ import java.util.Set;
     @Override
     public void hasFinishPaymentAnimation() {
         final IPaymentDescriptor payment = paymentRepository.getPayment();
-        Session.getInstance().getPaymentRewardRepository()
-            .getPaymentReward(Collections.singletonList(payment), this::handleResult);
+        paymentRewardRepository.getPaymentReward(Collections.singletonList(payment), this::handleResult);
     }
 
     private void handleResult(@NonNull final IPaymentDescriptor payment,

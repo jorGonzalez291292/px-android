@@ -101,7 +101,8 @@ public final class PaymentProcessorActivity extends AppCompatActivity
         try {
             paymentServiceHandlerWrapper = new PaymentServiceHandlerWrapper(session.getPaymentRepository(),
                 session.getConfigurationModule().getDisabledPaymentMethodRepository(),
-                new EscPaymentManagerImp(session.getMercadoPagoESC()), session.getInstructionsRepository());
+                new EscPaymentManagerImp(session.getMercadoPagoESC()), session.getInstructionsRepository(),
+                session.getPaymentRewardRepository());
 
             if (getFragmentByTag() == null) { // if fragment is not added, then create it.
                 addPaymentProcessorFragment(getSupportFragmentManager(), session);

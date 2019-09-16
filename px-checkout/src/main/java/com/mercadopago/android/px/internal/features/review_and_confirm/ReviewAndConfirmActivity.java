@@ -134,10 +134,10 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
         //TODO remove try/catch after session is persisted
         try {
             presenter = new ReviewAndConfirmPresenter(session.getPaymentRepository(),
-                session.getBusinessModelMapper(),
                 session.getDiscountRepository(),
                 session.getConfigurationModule().getPaymentSettings(),
                 session.getConfigurationModule().getUserSelectionRepository(),
+                session.getPaymentRewardRepository(),
                 session.getMercadoPagoESC(),
                 session.getProductIdProvider(),
                 PXApplicationBehaviourProvider.getSecurityBehaviour());

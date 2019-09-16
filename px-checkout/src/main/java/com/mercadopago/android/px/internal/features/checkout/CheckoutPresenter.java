@@ -7,12 +7,12 @@ import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
 import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
 import com.mercadopago.android.px.internal.configuration.InternalConfiguration;
-import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.navigation.DefaultPaymentMethodDriver;
 import com.mercadopago.android.px.internal.navigation.OnChangePaymentMethodDriver;
 import com.mercadopago.android.px.internal.repository.CheckoutPreferenceRepository;
 import com.mercadopago.android.px.internal.repository.GroupsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
+import com.mercadopago.android.px.internal.repository.PaymentRewardRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
@@ -22,7 +22,6 @@ import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.CheckoutStateModel;
 import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
-import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.Cause;
@@ -48,22 +47,22 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
     @NonNull /* default */ final PaymentRepository paymentRepository;
     @NonNull /* default */ final PaymentSettingRepository paymentSettingRepository;
     @NonNull /* default */ final UserSelectionRepository userSelectionRepository;
-    @NonNull /* default */ final BusinessModelMapper businessModelMapper;
     @NonNull /* default */ final CheckoutPreferenceRepository checkoutPreferenceRepository;
     @NonNull private final PluginRepository pluginRepository;
     @NonNull private final GroupsRepository groupsRepository;
+    @NonNull private final PaymentRewardRepository paymentRewardRepository;
     @NonNull private final InternalConfiguration internalConfiguration;
     private transient FailureRecovery failureRecovery;
 
-    public CheckoutPresenter(@NonNull final CheckoutStateModel persistentData,
+    /* default */ CheckoutPresenter(@NonNull final CheckoutStateModel persistentData,
         @NonNull final PaymentSettingRepository paymentSettingRepository,
         @NonNull final UserSelectionRepository userSelectionRepository,
         @NonNull final GroupsRepository groupsRepository,
         @NonNull final PluginRepository pluginRepository,
         @NonNull final PaymentRepository paymentRepository,
         @NonNull final CheckoutPreferenceRepository checkoutPreferenceRepository,
-        @NonNull final InternalConfiguration internalConfiguration,
-        @NonNull final BusinessModelMapper businessModelMapper) {
+        @NonNull final PaymentRewardRepository paymentRewardRepository,
+        @NonNull final InternalConfiguration internalConfiguration) {
 
         this.paymentSettingRepository = paymentSettingRepository;
         this.userSelectionRepository = userSelectionRepository;
@@ -71,8 +70,8 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
         this.pluginRepository = pluginRepository;
         this.paymentRepository = paymentRepository;
         this.checkoutPreferenceRepository = checkoutPreferenceRepository;
+        this.paymentRewardRepository = paymentRewardRepository;
         this.internalConfiguration = internalConfiguration;
-        this.businessModelMapper = businessModelMapper;
         state = persistentData;
     }
 
@@ -442,8 +441,7 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
 
     @Override
     public void onPaymentFinished(@NonNull final IPaymentDescriptor payment) {
-        Session.getInstance().getPaymentRewardRepository()
-            .getPaymentReward(Collections.singletonList(payment), this::handleResult);
+        paymentRewardRepository.getPaymentReward(Collections.singletonList(payment), this::handleResult);
     }
 
     private void handleResult(@NonNull final IPaymentDescriptor payment,

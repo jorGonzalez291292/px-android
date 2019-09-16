@@ -65,7 +65,6 @@ import com.mercadopago.android.px.internal.services.PreferenceService;
 import com.mercadopago.android.px.internal.util.LocaleUtil;
 import com.mercadopago.android.px.internal.util.RetrofitUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
-import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper;
 import com.mercadopago.android.px.model.Device;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.internal.PaymentReward;
@@ -322,7 +321,8 @@ public final class Session extends ApplicationModule implements AmountComponent 
                 getTokenRepository(),
                 getInstructionsRepository(),
                 getGroupsRepository(),
-                getAmountConfigurationRepository());
+                getAmountConfigurationRepository(),
+                getPaymentRewardRepository());
         }
 
         return paymentRepository;
@@ -348,12 +348,6 @@ public final class Session extends ApplicationModule implements AmountComponent 
     @SuppressWarnings("unused")
     public void setInternalConfiguration(@NonNull final InternalConfiguration internalConfiguration) {
         this.internalConfiguration = internalConfiguration;
-    }
-
-    //TODO move.
-    @NonNull
-    public BusinessModelMapper getBusinessModelMapper() {
-        return new BusinessModelMapper(getConfigurationModule().getPaymentSettings(), getPaymentRepository());
     }
 
     @NonNull
