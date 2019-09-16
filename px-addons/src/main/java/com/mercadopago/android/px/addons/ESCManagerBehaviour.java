@@ -8,7 +8,7 @@ public interface ESCManagerBehaviour {
 
     void setSessionId(@NonNull final String sessionId);
 
-    String getESC(@Nullable final String cardId, @NonNull final String firstDigits, @NonNull final String lastDigits);
+    String getESC(@Nullable final String cardId, @Nullable final String firstDigits, @Nullable final String lastDigits);
 
     boolean saveESCWith(@NonNull final String cardId, @NonNull final String esc);
 

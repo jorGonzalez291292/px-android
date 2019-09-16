@@ -1,3 +1,12 @@
+## VERSION 4.21.0
+_04_09_2019_
+* FEATURE - Added secure payments behaviour
+* FEATURE - Added important fragment in business payment
+* ENHANCEMENT - Enable TLS 1.2 in HttpClient
+* ENHANCEMENT - Added collectorId to CheckoutPreference
+* FIX - Security code validation
+* FIX - Strict mode warning
+
 ## VERSION 4.20.0
 _29_08_2019_
 * FEATURE - Added tracking of session time and checkout type.

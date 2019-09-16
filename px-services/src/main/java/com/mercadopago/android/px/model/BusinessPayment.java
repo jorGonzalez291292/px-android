@@ -272,8 +272,9 @@ public class BusinessPayment implements IPaymentDescriptor, Parcelable {
         /* default */ @Nullable String receiptId;
         /* default */ @Nullable String subtitle;
 
-        ExternalFragment topFragment;
-        ExternalFragment bottomFragment;
+        /* default */ ExternalFragment topFragment;
+        /* default */ ExternalFragment bottomFragment;
+        /* default */ ExternalFragment importantFragment;
 
         @Deprecated
         public Builder(@NonNull final Decorator decorator,
@@ -416,6 +417,18 @@ public class BusinessPayment implements IPaymentDescriptor, Parcelable {
          */
         public Builder setBottomFragment(@NonNull final Class<? extends Fragment> zClass, @Nullable final Bundle args) {
             bottomFragment = new ExternalFragment(zClass, args);
+            return this;
+        }
+
+        /**
+         * Custom fragment that will appear at the top of all information inside Business result screen.
+         *
+         * @param zClass fragment class
+         * @return builder
+         */
+        public Builder setImportantFragment(@NonNull final Class<? extends Fragment> zClass,
+            @Nullable final Bundle args) {
+            importantFragment = new ExternalFragment(zClass, args);
             return this;
         }
 
