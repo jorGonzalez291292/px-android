@@ -1,12 +1,12 @@
 package com.mercadopago.android.px.internal.features.paymentresult;
 
-import com.mercadopago.android.px.internal.features.paymentresult.components.AccreditationTime;
-import com.mercadopago.android.px.internal.features.paymentresult.components.InstructionsActions;
-import com.mercadopago.android.px.internal.features.paymentresult.components.InstructionsContent;
-import com.mercadopago.android.px.internal.features.paymentresult.components.InstructionsInfo;
-import com.mercadopago.android.px.internal.features.paymentresult.components.InstructionsReferences;
-import com.mercadopago.android.px.internal.features.paymentresult.components.InstructionsTertiaryInfo;
-import com.mercadopago.android.px.internal.features.paymentresult.props.InstructionsContentProps;
+import com.mercadopago.android.px.internal.features.payment_result.components.AccreditationTime;
+import com.mercadopago.android.px.internal.features.payment_result.components.InstructionsActions;
+import com.mercadopago.android.px.internal.features.payment_result.components.InstructionsContent;
+import com.mercadopago.android.px.internal.features.payment_result.components.InstructionsInfo;
+import com.mercadopago.android.px.internal.features.payment_result.components.InstructionsReferences;
+import com.mercadopago.android.px.internal.features.payment_result.components.InstructionsTertiaryInfo;
+import com.mercadopago.android.px.internal.features.payment_result.props.InstructionsContentProps;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
 import com.mercadopago.android.px.mocks.Instructions;
 import com.mercadopago.android.px.model.Instruction;

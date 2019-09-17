@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.features.TermsAndConditionsActivity;
-import com.mercadopago.android.px.internal.features.paymentresult.components.LineSeparator;
+import com.mercadopago.android.px.internal.features.payment_result.components.LineSeparator;
 import com.mercadopago.android.px.internal.features.review_and_confirm.models.TermsAndConditionsModel;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 

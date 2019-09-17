@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.internal.features.paymentresult.components.LineSeparator;
+import com.mercadopago.android.px.internal.features.payment_result.components.LineSeparator;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.model.display_info.DisplayInfo;
 import java.util.ArrayList;

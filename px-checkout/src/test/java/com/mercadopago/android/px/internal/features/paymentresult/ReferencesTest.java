@@ -1,8 +1,8 @@
 package com.mercadopago.android.px.internal.features.paymentresult;
 
-import com.mercadopago.android.px.internal.features.paymentresult.components.InstructionReferenceComponent;
-import com.mercadopago.android.px.internal.features.paymentresult.components.InstructionsReferences;
-import com.mercadopago.android.px.internal.features.paymentresult.props.InstructionsReferencesProps;
+import com.mercadopago.android.px.internal.features.payment_result.components.InstructionReferenceComponent;
+import com.mercadopago.android.px.internal.features.payment_result.components.InstructionsReferences;
+import com.mercadopago.android.px.internal.features.payment_result.props.InstructionsReferencesProps;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
 import com.mercadopago.android.px.mocks.Instructions;
 import com.mercadopago.android.px.model.Instruction;

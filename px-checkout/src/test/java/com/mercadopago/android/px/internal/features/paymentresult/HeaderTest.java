@@ -1,7 +1,7 @@
 package com.mercadopago.android.px.internal.features.paymentresult;
 
-import com.mercadopago.android.px.internal.features.paymentresult.props.HeaderProps;
-import com.mercadopago.android.px.internal.features.paymentresult.props.IconProps;
+import com.mercadopago.android.px.internal.features.payment_result.props.HeaderProps;
+import com.mercadopago.android.px.internal.features.payment_result.props.IconProps;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
 import com.mercadopago.android.px.model.Action;
 import junit.framework.Assert;
