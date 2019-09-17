@@ -26,6 +26,7 @@ import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.GenericPayment;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
+import com.mercadopago.android.px.model.IPaymentDescriptorHandler;
 import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.PaymentRecovery;
@@ -70,11 +71,11 @@ public final class PaymentProcessorActivity extends AppCompatActivity
     }
 
     @NonNull
-    public static IParcelablePaymentDescriptor getPayment(final Intent intent) {
-        IParcelablePaymentDescriptor payment = null;
+    public static IPaymentDescriptor getPayment(final Intent intent) {
+        IPaymentDescriptor payment = null;
         if (intent.hasExtra(EXTRA_PAYMENT)) {
             //noinspection ConstantConditions
-            payment = (IParcelablePaymentDescriptor) intent.getExtras().get(EXTRA_PAYMENT);
+            payment = (IPaymentDescriptor) intent.getExtras().get(EXTRA_PAYMENT);
         }
         if (payment == null) {
             throw new IllegalStateException("No payment passed to process");
@@ -183,9 +184,21 @@ public final class PaymentProcessorActivity extends AppCompatActivity
             @Override
             public void onPaymentFinished(@NonNull final IPaymentDescriptor payment) {
                 final Intent intent = new Intent();
-                intent.putExtra(EXTRA_PAYMENT, (Parcelable) IParcelablePaymentDescriptor.with(payment));
-                setResult(RESULT_PAYMENT, intent);
-                finish();
+                payment.process(new IPaymentDescriptorHandler() {
+                    @Override
+                    public void visit(@NonNull final IPaymentDescriptor payment) {
+                        intent.putExtra(EXTRA_PAYMENT, (Parcelable) IParcelablePaymentDescriptor.with(payment));
+                        setResult(RESULT_PAYMENT, intent);
+                        finish();
+                    }
+
+                    @Override
+                    public void visit(@NonNull final BusinessPayment businessPayment) {
+                        intent.putExtra(EXTRA_PAYMENT, (Parcelable) businessPayment);
+                        setResult(RESULT_PAYMENT, intent);
+                        finish();
+                    }
+                });
             }
 
             @Override
