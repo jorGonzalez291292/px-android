@@ -7,12 +7,7 @@ import com.mercadopago.android.px.internal.features.payment_result.props.Instruc
 import com.mercadopago.android.px.internal.features.payment_result.props.InstructionsSubtitleProps;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
 import com.mercadopago.android.px.internal.view.Component;
-import com.mercadopago.android.px.model.ProcessingMode;
 import java.util.List;
-
-/**
- * Created by vaserber on 11/13/17.
- */
 
 public class Instructions extends Component<InstructionsProps, Void> {
 
@@ -56,6 +51,8 @@ public class Instructions extends Component<InstructionsProps, Void> {
     }
 
     public boolean shouldShowEmailInSecondaryInfo() {
-        return props.processingMode.equals(ProcessingMode.AGGREGATOR);
+        //TODO check this logic
+        //return props.processingMode.equals(ProcessingMode.AGGREGATOR);
+        return true;
     }
 }

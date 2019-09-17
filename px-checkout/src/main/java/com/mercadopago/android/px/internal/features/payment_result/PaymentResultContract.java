@@ -3,19 +3,20 @@ package com.mercadopago.android.px.internal.features.payment_result;
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.base.MvpView;
 import com.mercadopago.android.px.internal.features.payment_result.viewmodel.PaymentResultViewModel;
+import com.mercadopago.android.px.internal.view.ActionDispatcher;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 
 public interface PaymentResultContract {
 
     interface View extends MvpView {
 
-        void setModel(@NonNull final PaymentResultViewModel model);
+        void configureViews(@NonNull final PaymentResultViewModel model, @NonNull final ActionDispatcher callback);
 
-        void showApiExceptionError(ApiException exception, String requestOrigin);
+        void showApiExceptionError(@NonNull final ApiException exception, @NonNull final String requestOrigin);
 
         void showInstructionsError();
 
-        void openLink(String url);
+        void openLink(@NonNull final String url);
 
         void finishWithResult(final int resultCode);
 
@@ -28,7 +29,7 @@ public interface PaymentResultContract {
 
     interface Presenter {
 
-        void freshStart();
+        void onFreshStart();
 
         void onAbort();
     }

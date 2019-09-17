@@ -5,11 +5,12 @@ import android.support.annotation.Nullable;
 import com.mercadopago.android.px.core.MercadoPagoCheckout;
 import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
+import com.mercadopago.android.px.internal.features.payment_result.mappers.PaymentResultViewModelMapper;
 import com.mercadopago.android.px.internal.features.review_and_confirm.components.actions.ChangePaymentMethodAction;
 import com.mercadopago.android.px.internal.repository.InstructionsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
-import com.mercadopago.android.px.internal.view.ActionsListener;
+import com.mercadopago.android.px.internal.view.ActionDispatcher;
 import com.mercadopago.android.px.internal.view.CopyAction;
 import com.mercadopago.android.px.internal.view.LinkAction;
 import com.mercadopago.android.px.internal.view.NextAction;
@@ -27,21 +28,20 @@ import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
 import java.util.List;
 
 /* default */ class PaymentResultPresenter extends BasePresenter<PaymentResultContract.View>
-    implements ActionsListener, PaymentResultContract.Presenter {
+    implements ActionDispatcher, PaymentResultContract.Presenter {
 
-    private final PaymentModel paymentModel;
     private final PaymentSettingRepository paymentSettings;
+    private final PaymentModel paymentModel;
     private final InstructionsRepository instructionsRepository;
-    @NonNull private final ResultViewTrack resultViewTrack;
+    private final ResultViewTrack resultViewTrack;
 
     private FailureRecovery failureRecovery;
 
     /* default */ PaymentResultPresenter(@NonNull final PaymentSettingRepository paymentSettings,
-        @NonNull final InstructionsRepository instructionsRepository,
-        @NonNull final PaymentModel paymentModel) {
+        @NonNull final InstructionsRepository instructionsRepository, @NonNull final PaymentModel paymentModel) {
         this.paymentSettings = paymentSettings;
-        this.instructionsRepository = instructionsRepository;
         this.paymentModel = paymentModel;
+        this.instructionsRepository = instructionsRepository;
 
         resultViewTrack = new ResultViewTrack(ResultViewTrack.Style.GENERIC, paymentModel.getPaymentResult(),
                 paymentSettings.getCheckoutPreference());
@@ -51,13 +51,6 @@ import java.util.List;
     public void attachView(final PaymentResultContract.View view) {
         super.attachView(view);
 
-        /*getView().setPropPaymentResult(
-            paymentSettings.getCheckoutPreference().getSite().getCurrencyId(),
-            paymentResult,
-            paymentResult.isOffPayment());
-
-        getView().notifyPropsChanged();*/
-
         if (paymentModel.getPaymentResult().isOffPayment()) {
             getInstructions();
         } else {
@@ -66,13 +59,14 @@ import java.util.List;
     }
 
     @Override
-    public void freshStart() {
+    public void onFreshStart() {
         setCurrentViewTracker(resultViewTrack);
     }
 
     @Override
     public void onAbort() {
         new AbortEvent(resultViewTrack).track();
+        getView().finishWithResult(MercadoPagoCheckout.PAYMENT_RESULT_CODE);
     }
 
     /* default */ void getInstructions() {
@@ -133,11 +127,13 @@ import java.util.List;
     }
 
     private void mapPaymentModel(@Nullable final Instruction instruction) {
-
+        getView().configureViews(new PaymentResultViewModelMapper(
+            paymentSettings.getAdvancedConfiguration().getPaymentResultScreenConfiguration(),
+            instruction).map(paymentModel), this);
     }
 
     @Override
-    public void onAction(@NonNull final Action action) {
+    public void dispatch(@NonNull final Action action) {
         if (!isViewAttached()) {
             return;
         }

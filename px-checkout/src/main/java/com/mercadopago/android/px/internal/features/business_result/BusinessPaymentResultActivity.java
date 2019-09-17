@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.di.Session;
@@ -32,17 +31,18 @@ public class BusinessPaymentResultActivity extends PXActivity<BusinessPaymentRes
         super.onCreate(savedInstanceState);
         setContentView(R.layout.px_activity_business_result);
 
-        final BusinessPaymentModel model = getModel();
-        if (model != null) {
-            presenter = new BusinessPaymentResultPresenter(
-                Session.getInstance().getConfigurationModule().getPaymentSettings(), model);
-            presenter.attachView(this);
-            if (savedInstanceState == null) {
-                presenter.onFreshStart();
-            }
-        } else {
-            throw new IllegalStateException("BusinessPayment can't be loaded");
+        presenter = createPresenter();
+        presenter.attachView(this);
+        if (savedInstanceState == null) {
+            presenter.onFreshStart();
         }
+    }
+
+    @NonNull
+    private BusinessPaymentResultPresenter createPresenter() {
+        final BusinessPaymentModel model = getIntent().getParcelableExtra(EXTRA_BUSINESS_PAYMENT_MODEL);
+        return new BusinessPaymentResultPresenter(
+            Session.getInstance().getConfigurationModule().getPaymentSettings(), model);
     }
 
     @Override
@@ -56,15 +56,15 @@ public class BusinessPaymentResultActivity extends PXActivity<BusinessPaymentRes
         BusinessResultLegacyRenderer.render(findViewById(R.id.container), callback, model);
     }
 
-    @Nullable
-    private BusinessPaymentModel getModel() {
-        return getIntent().getExtras() != null ?
-            getIntent().getExtras().getParcelable(EXTRA_BUSINESS_PAYMENT_MODEL) : null;
-    }
-
     @Override
     public void onBackPressed() {
         presenter.onAbort();
+    }
+
+    @Override
+    protected void onDestroy() {
+        presenter.detachView();
+        super.onDestroy();
     }
 
     @Override

@@ -24,7 +24,6 @@ public class Body extends Component<PaymentResultBodyProps, Void> {
     public Instructions getInstructionsComponent() {
         final InstructionsProps instructionsProps = new InstructionsProps.Builder()
             .setInstruction(props.instruction)
-            .setProcessingMode(props.processingMode)
             .build();
         return new Instructions(instructionsProps, getDispatcher());
     }

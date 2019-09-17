@@ -11,8 +11,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import com.mercadolibre.android.ui.widgets.MeliSnackbar;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration;
-import com.mercadopago.android.px.core.MercadoPagoCheckout;
 import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.payment_result.components.AccreditationComment;
@@ -47,13 +45,12 @@ import com.mercadopago.android.px.internal.features.payment_result.components.In
 import com.mercadopago.android.px.internal.features.payment_result.components.InstructionsSubtitleRenderer;
 import com.mercadopago.android.px.internal.features.payment_result.components.InstructionsTertiaryInfo;
 import com.mercadopago.android.px.internal.features.payment_result.components.InstructionsTertiaryInfoRenderer;
-import com.mercadopago.android.px.internal.features.payment_result.components.PaymentResultContainer;
-import com.mercadopago.android.px.internal.features.payment_result.props.PaymentResultProps;
+import com.mercadopago.android.px.internal.features.payment_result.components.PaymentResultLegacyRenderer;
 import com.mercadopago.android.px.internal.features.payment_result.viewmodel.PaymentResultViewModel;
-import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
-import com.mercadopago.android.px.internal.view.Component;
-import com.mercadopago.android.px.internal.view.ComponentManager;
+import com.mercadopago.android.px.internal.view.ActionDispatcher;
+import com.mercadopago.android.px.internal.view.PaymentResultBody;
+import com.mercadopago.android.px.internal.view.PaymentResultHeader;
 import com.mercadopago.android.px.internal.view.RendererFactory;
 import com.mercadopago.android.px.internal.viewmodel.ChangePaymentMethodPostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
@@ -75,9 +72,6 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
     private static final String EXTRA_PAYMENT_MODEL = "extra_payment_model";
     public static final String EXTRA_RESULT_CODE = "extra_result_code";
 
-    private PaymentResultProps props;
-    private ComponentManager componentManager;
-
     public static Intent getIntent(@NonNull final Context context, @NonNull final PaymentModel paymentModel) {
         final Intent intent = new Intent(context, PaymentResultActivity.class);
         intent.putExtra(EXTRA_PAYMENT_MODEL, paymentModel);
@@ -87,6 +81,7 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.px_activity_payment_result);
 
         RendererFactory.register(Body.class, BodyRenderer.class);
         RendererFactory.register(Instructions.class, InstructionsRenderer.class);
@@ -105,33 +100,20 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
         RendererFactory.register(InstructionsAction.class, InstructionsActionRenderer.class);
         RendererFactory.register(BodyError.class, BodyErrorRenderer.class);
 
-        final PaymentSettingRepository paymentSettings =
-            Session.getInstance().getConfigurationModule().getPaymentSettings();
-
-        final PaymentResultScreenConfiguration paymentResultScreenConfiguration =
-            paymentSettings.getAdvancedConfiguration().getPaymentResultScreenConfiguration();
-
-        props = new PaymentResultProps.Builder(paymentResultScreenConfiguration).build();
-
-        presenter = createPresenter(paymentSettings);
-
-        componentManager = new ComponentManager(this);
-        final Component root = new PaymentResultContainer(componentManager, props);
-        componentManager.setComponent(root);
-        componentManager.setActionsListener(presenter);
-
+        presenter = createPresenter();
         presenter.attachView(this);
-
         if (savedInstanceState == null) {
-            presenter.freshStart();
+            presenter.onFreshStart();
         }
     }
 
-    private PaymentResultPresenter createPresenter(final PaymentSettingRepository paymentSettings) {
-        final Intent intent = getIntent();
-        final PaymentModel paymentModel = intent.getParcelableExtra(EXTRA_PAYMENT_MODEL);
-        return new PaymentResultPresenter(paymentSettings, Session.getInstance().getInstructionsRepository(),
-            paymentModel);
+    @NonNull
+    private PaymentResultPresenter createPresenter() {
+        final PaymentModel paymentModel = getIntent().getParcelableExtra(EXTRA_PAYMENT_MODEL);
+        final Session session = Session.getInstance();
+
+        return new PaymentResultPresenter(session.getConfigurationModule().getPaymentSettings(),
+            session.getInstructionsRepository(), paymentModel);
     }
 
     @Override
@@ -141,18 +123,24 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
     }
 
     @Override
-    public void setModel(@NonNull final PaymentResultViewModel model) {
-
+    public void configureViews(@NonNull final PaymentResultViewModel model, @NonNull final ActionDispatcher callback) {
+        final PaymentResultHeader header = findViewById(R.id.header);
+        header.setModel(model.headerModel);
+        final PaymentResultBody body = findViewById(R.id.body);
+        body.setModel(model.bodyModel);
+        //TODO migrate
+        PaymentResultLegacyRenderer.render(findViewById(R.id.container), callback, model.legacyViewModel);
     }
 
     @Override
-    public void showApiExceptionError(final ApiException exception, final String requestOrigin) {
+    public void showApiExceptionError(@NonNull final ApiException exception, @NonNull final String requestOrigin) {
         ErrorUtil.showApiExceptionError(this, exception, requestOrigin);
     }
 
     @Override
     public void showInstructionsError() {
-        ErrorUtil.startErrorActivity(this, new MercadoPagoError(getString(R.string.px_standard_error_message), false));
+        ErrorUtil.startErrorActivity(this,
+            new MercadoPagoError(getString(R.string.px_standard_error_message), false));
     }
 
     @Override
@@ -175,7 +163,6 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
     @Override
     public void onBackPressed() {
         presenter.onAbort();
-        finishWithResult(MercadoPagoCheckout.PAYMENT_RESULT_CODE);
     }
 
     private void resolveRequest(final int resultCode, final Intent data) {
@@ -197,7 +184,7 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
     }
 
     @Override
-    public void openLink(final String url) {
+    public void openLink(@NonNull final String url) {
         try {
             final Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             startActivity(browserIntent);

@@ -4,53 +4,33 @@ import android.support.annotation.NonNull;
 import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration;
 import com.mercadopago.android.px.model.Instruction;
 import com.mercadopago.android.px.model.PaymentResult;
-import com.mercadopago.android.px.model.ProcessingMode;
 
 public class PaymentResultBodyProps {
 
     public final Instruction instruction;
-    public final ProcessingMode processingMode;
     public final String currencyId;
-    public PaymentResultScreenConfiguration paymentResultScreenConfiguration;
-    public PaymentResult paymentResult;
+    public final PaymentResultScreenConfiguration configuration;
+    public final PaymentResult paymentResult;
 
     public PaymentResultBodyProps(@NonNull final Builder builder) {
         paymentResult = builder.paymentResult;
         instruction = builder.instruction;
-        processingMode = builder.processingMode;
         currencyId = builder.currencyId;
-        paymentResultScreenConfiguration = builder.paymentResultScreenConfiguration;
-    }
-
-    public Builder toBuilder() {
-        return new Builder(paymentResultScreenConfiguration)
-            .setCurrencyId(currencyId)
-            .setInstruction(instruction)
-            .setProcessingMode(processingMode)
-            .setPaymentResult(paymentResult);
+        configuration = builder.configuration;
     }
 
     public static class Builder {
-
         public Instruction instruction;
-        public ProcessingMode processingMode;
         public String currencyId;
-
-        public PaymentResultScreenConfiguration paymentResultScreenConfiguration;
-
+        public PaymentResultScreenConfiguration configuration;
         public PaymentResult paymentResult;
 
-        public Builder(@NonNull final PaymentResultScreenConfiguration paymentResultScreenConfiguration) {
-            this.paymentResultScreenConfiguration = paymentResultScreenConfiguration;
+        public Builder(@NonNull final PaymentResultScreenConfiguration configuration) {
+            this.configuration = configuration;
         }
 
         public Builder setInstruction(final Instruction instruction) {
             this.instruction = instruction;
-            return this;
-        }
-
-        public Builder setProcessingMode(final ProcessingMode processingMode) {
-            this.processingMode = processingMode;
             return this;
         }
 
