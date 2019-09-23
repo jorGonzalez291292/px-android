@@ -34,6 +34,17 @@
         android:layout_marginEnd="@dimen/ui_4m"
         android:layout_marginStart="@dimen/ui_4m"/>
 
+    <com.mercadolibre.android.ui.widgets.MeliButton
+        android:id="@+id/showAllDiscounts"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:type="actionSecondary"
+        android:text="Ver todos los descuentos"
+        android:layout_marginTop="@dimen/ui_3m"
+        android:layout_marginRight="@dimen/ui_4m"
+        android:layout_marginEnd="@dimen/ui_4m"
+        android:layout_marginStart="@dimen/ui_4m" />
+
     <com.mercadolibre.android.mlbusinesscomponents.components.common.downloadapp.MLBusinessDownloadAppView
         android:id="@+id/downloadView"
         android:layout_width="match_parent"
