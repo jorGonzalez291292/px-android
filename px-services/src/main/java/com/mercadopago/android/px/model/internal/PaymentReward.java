@@ -5,8 +5,6 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
-import com.mercadopago.android.px.internal.util.ParcelableUtil;
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
@@ -189,14 +187,15 @@ public final class PaymentReward implements Parcelable {
         private final String title;
         private final String subtitle;
         private final Action action;
-        private final Action actionDownload;
+        @SerializedName("action_download")
+        private final DownloadApp actionDownload;
         private final List<Item> items;
 
         /* default */ Discount(final Parcel in) {
             title = in.readString();
             subtitle = in.readString();
             action = in.readParcelable(Action.class.getClassLoader());
-            actionDownload = in.readParcelable(Action.class.getClassLoader());
+            actionDownload = in.readParcelable(DownloadApp.class.getClassLoader());
             items = in.createTypedArrayList(Item.CREATOR);
         }
 
@@ -212,6 +211,48 @@ public final class PaymentReward implements Parcelable {
         @Override
         public int describeContents() {
             return 0;
+        }
+
+        /* default */ public static final class DownloadApp implements Parcelable {
+
+            public static final Creator<DownloadApp> CREATOR = new Creator<DownloadApp>() {
+                @Override
+                public DownloadApp createFromParcel(Parcel in) {
+                    return new DownloadApp(in);
+                }
+
+                @Override
+                public DownloadApp[] newArray(int size) {
+                    return new DownloadApp[size];
+                }
+            };
+
+            @Override
+            public int describeContents() {
+                return 0;
+            }
+
+            @Override
+            public void writeToParcel(final Parcel dest, final int flags) {
+                dest.writeString(title);
+                dest.writeParcelable(action, flags);
+            }
+
+            /* default */ DownloadApp(Parcel in) {
+                title = in.readString();
+                action = in.readParcelable(Action.class.getClassLoader());
+            }
+
+            private final String title;
+            private final Action action;
+
+            public String getTitle() {
+                return title;
+            }
+
+            public Action getAction() {
+                return action;
+            }
         }
 
         /* default */ public static final class Item implements Parcelable {
@@ -289,7 +330,7 @@ public final class PaymentReward implements Parcelable {
             return action;
         }
 
-        public Action getActionDownload() {
+        public DownloadApp getActionDownload() {
             return actionDownload;
         }
 
