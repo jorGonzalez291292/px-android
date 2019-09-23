@@ -46,7 +46,7 @@ import java.util.List;
         this.instructionsRepository = instructionsRepository;
 
         resultViewTrack = new ResultViewTrack(ResultViewTrack.Style.GENERIC, paymentModel.getPaymentResult(),
-                paymentSettings.getCheckoutPreference());
+            paymentSettings.getCheckoutPreference());
     }
 
     @Override
@@ -86,7 +86,7 @@ import java.util.List;
                         setFailureRecovery(() -> getInstructions());
                     }
                 }
-        });
+            });
     }
 
     public void recoverFromFailure() {
@@ -161,21 +161,23 @@ import java.util.List;
 
     @Override
     public void OnClickDownloadAppButton(@NonNull final String deepLink) {
-        getView().downloadAppAction(deepLink);
+        getView().processBusinessAction(deepLink);
     }
 
     @Override
     public void OnClickCrossSellingButton(@NonNull final String deepLink) {
-        getView().crossSellingAction(deepLink);
+        getView().processBusinessAction(deepLink);
     }
 
     @Override
     public void onClickDiscountItem(final int index, @Nullable final String deepLink, @Nullable final String trackId) {
-        getView().discountItemAction(index, deepLink, trackId);
+        if (deepLink != null) {
+            getView().processBusinessAction(deepLink);
+        }
     }
 
     @Override
     public void onClickLoyaltyButton(@NonNull final String deepLink) {
-        getView().loyaltyAction(deepLink);
+        getView().processBusinessAction(deepLink);
     }
 }

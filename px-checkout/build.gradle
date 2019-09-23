@@ -40,5 +40,5 @@ dependencies {
     implementation "com.squareup.picasso:picasso:$picasso"
     implementation "com.mercadolibre.android:ui:$meli_ui_lib"
     implementation "com.mercadolibre.android:carddrawer:$meli_card_drawer"
-    implementation 'com.mercadolibre.android.mlbusinesscomponents:mlbusinesscomponents:1.0.1'
+    implementation "com.mercadolibre.android.mlbusinesscomponents:mlbusinesscomponents:$mlbusinesscomponents"
 }
