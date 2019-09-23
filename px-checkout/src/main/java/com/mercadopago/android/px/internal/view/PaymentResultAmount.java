@@ -69,9 +69,9 @@ public class PaymentResultAmount extends FlexboxLayout {
 
     @Nullable
     private String getNoRate(@Nullable final PayerCost payerCost) {
-        if (payerCost != null && payerCost.getInstallments() > 1) {
+        if (hasPayerCostWithMultipleInstallments(payerCost)) {
             final BigDecimal rate = payerCost.getInstallmentRate();
-            if (rate.equals(BigDecimal.ZERO)) {
+            if (BigDecimal.ZERO.equals(rate)) {
                 return getResources().getString(R.string.px_zero_rate).toLowerCase();
             }
         }
