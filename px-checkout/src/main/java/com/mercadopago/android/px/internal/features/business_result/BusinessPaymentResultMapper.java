@@ -38,7 +38,7 @@ public class BusinessPaymentResultMapper extends Mapper<BusinessPaymentModel, Bu
         final PaymentResultType type = PaymentResultType.from(payment.getDecorator());
         return new PaymentResultBody.Model.Builder()
             .setMethodModels(methodModels)
-            .setRewardResultViewModel(new PaymentRewardResultMapper().map(model.getPaymentReward()))
+            .setRewardResultViewModel(new PaymentRewardMapper().map(model.getPaymentReward()))
             .setReceiptId(type == PaymentResultType.APPROVED ? payment.getReceipt() : null)
             .setHelp(payment.getHelp())
             .setStatement(payment.getStatementDescription())

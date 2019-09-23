@@ -13,17 +13,18 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nullable;
 
-public class PaymentRewardResultMapper extends Mapper<PaymentReward, PaymentRewardResultViewModel> {
+public class PaymentRewardMapper extends Mapper<PaymentReward, PaymentRewardViewModel> {
 
     @Override
-    public PaymentRewardResultViewModel map(@NonNull final PaymentReward paymentReward) {
+    public PaymentRewardViewModel map(@NonNull final PaymentReward paymentReward) {
         final PaymentReward.Discount discount = paymentReward.getDiscount();
-        return new PaymentRewardResultViewModel(getLoyaltyData(paymentReward.getScore()),
+        return new PaymentRewardViewModel(getLoyaltyData(paymentReward.getScore()),
             getDiscountBoxData(discount), getDownloadAppData(discount),
             getCrossSellingBoxData(paymentReward.getCrossSellings()));
     }
 
-    private MLBusinessLoyaltyRingData getLoyaltyData(final PaymentReward.Score score) {
+    @Nullable
+    private MLBusinessLoyaltyRingData getLoyaltyData(@Nullable final PaymentReward.Score score) {
 
         if (score == null) {
             return null;
@@ -65,8 +66,9 @@ public class PaymentRewardResultMapper extends Mapper<PaymentReward, PaymentRewa
         };
     }
 
+    @Nullable
     private MLBusinessDiscountBoxData getDiscountBoxData(
-        final PaymentReward.Discount discount) {
+        @Nullable final PaymentReward.Discount discount) {
 
         if (discount == null) {
             return null;
@@ -132,7 +134,8 @@ public class PaymentRewardResultMapper extends Mapper<PaymentReward, PaymentRewa
         return singleItems;
     }
 
-    private MLBusinessDownloadAppData getDownloadAppData(final PaymentReward.Discount discount) {
+    @Nullable
+    private MLBusinessDownloadAppData getDownloadAppData(@Nullable final PaymentReward.Discount discount) {
         final PaymentReward.Action action;
         if (discount == null || (action = discount.getActionDownload()) == null) {
             return null;

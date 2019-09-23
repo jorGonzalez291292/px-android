@@ -7,14 +7,14 @@ import com.mercadolibre.android.mlbusinesscomponents.components.discount.MLBusin
 import com.mercadolibre.android.mlbusinesscomponents.components.loyalty.MLBusinessLoyaltyRingData;
 import java.util.List;
 
-/* default */ public class PaymentRewardResultViewModel {
+/* default */ public class PaymentRewardViewModel {
 
     /* default */ private final MLBusinessLoyaltyRingData loyaltyRingData;
     /* default */ private final MLBusinessDiscountBoxData discountBoxData;
     /* default */ private final MLBusinessDownloadAppData downloadAppData;
     /* default */ private final List<MLBusinessCrossSellingBoxData> crossSellingBoxData;
 
-    /* default */ PaymentRewardResultViewModel(
+    /* default */ PaymentRewardViewModel(
         @Nullable final MLBusinessLoyaltyRingData loyaltyRingData,
         @Nullable final MLBusinessDiscountBoxData discountBoxData,
         @Nullable final MLBusinessDownloadAppData downloadAppData,
