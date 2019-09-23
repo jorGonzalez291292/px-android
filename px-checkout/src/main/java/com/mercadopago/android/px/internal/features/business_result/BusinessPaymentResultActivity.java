@@ -3,9 +3,11 @@ package com.mercadopago.android.px.internal.features.business_result;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.Window;
@@ -13,7 +15,7 @@ import android.view.WindowManager;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.di.Session;
-import com.mercadopago.android.px.internal.view.ActionDispatcher;
+import com.mercadopago.android.px.internal.view.BusinessActions;
 import com.mercadopago.android.px.internal.view.PaymentResultBody;
 import com.mercadopago.android.px.internal.view.PaymentResultHeader;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
@@ -26,7 +28,8 @@ public class BusinessPaymentResultActivity extends PXActivity<BusinessPaymentRes
 
     private static final String EXTRA_BUSINESS_PAYMENT_MODEL = "extra_business_payment_model";
 
-    public static Intent getIntent(@NonNull final Context context, @NonNull final BusinessPaymentModel model) {
+    public static Intent getIntent(@NonNull final Context context,
+        @NonNull final BusinessPaymentModel model) {
         final Intent intent = new Intent(context, BusinessPaymentResultActivity.class);
         intent.putExtra(EXTRA_BUSINESS_PAYMENT_MODEL, model);
         return intent;
@@ -53,12 +56,12 @@ public class BusinessPaymentResultActivity extends PXActivity<BusinessPaymentRes
 
     @Override
     public void configureViews(@NonNull final BusinessPaymentResultViewModel model,
-        @NonNull final ActionDispatcher callback) {
+        @NonNull final BusinessActions callback) {
         findViewById(R.id.loading).setVisibility(View.GONE);
         final PaymentResultHeader header = findViewById(R.id.header);
         header.setModel(model.headerModel);
         final PaymentResultBody body = findViewById(R.id.body);
-        body.setModel(model.bodyModel);
+        body.init(model.bodyModel, callback);
         //TODO migrate
         BusinessResultLegacyRenderer.render(findViewById(R.id.container), callback, model);
     }
@@ -93,5 +96,27 @@ public class BusinessPaymentResultActivity extends PXActivity<BusinessPaymentRes
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(ContextCompat.getColor(this, color));
         }
+    }
+
+    @Override
+    public void downloadAppAction(@NonNull final String deepLink) {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deepLink)));
+    }
+
+    @Override
+    public void crossSellingAction(@NonNull final String deepLink) {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deepLink)));
+    }
+
+    @Override
+    public void discountItemAction(final int index, @Nullable final String deepLink, @Nullable final String trackId) {
+        if (deepLink != null) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deepLink)));
+        }
+    }
+
+    @Override
+    public void loyaltyAction(@NonNull final String deepLink) {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deepLink)));
     }
 }

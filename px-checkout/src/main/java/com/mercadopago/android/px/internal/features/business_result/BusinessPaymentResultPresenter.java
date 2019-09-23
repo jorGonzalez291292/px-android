@@ -1,9 +1,11 @@
 package com.mercadopago.android.px.internal.features.business_result;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
+import com.mercadopago.android.px.internal.view.BusinessActions;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.model.Action;
 import com.mercadopago.android.px.model.ExitAction;
@@ -17,7 +19,7 @@ import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
 import com.mercadopago.android.px.tracking.internal.views.ViewTracker;
 
 /* default */ class BusinessPaymentResultPresenter extends BasePresenter<BusinessPaymentResultContract.View>
-    implements ActionDispatcher, BusinessPaymentResultContract.Presenter {
+    implements ActionDispatcher, BusinessPaymentResultContract.Presenter, BusinessActions {
 
     private final BusinessPaymentModel model;
     private final ViewTracker viewTracker;
@@ -70,5 +72,25 @@ import com.mercadopago.android.px.tracking.internal.views.ViewTracker;
         final BusinessPaymentResultViewModel viewModel = new BusinessPaymentResultMapper().map(model);
         getView().configureViews(viewModel, this);
         getView().setStatusBarColor(viewModel.headerModel.getStatusBarColor());
+    }
+
+    @Override
+    public void OnClickDownloadAppButton(@NonNull final String deepLink) {
+        getView().downloadAppAction(deepLink);
+    }
+
+    @Override
+    public void OnClickCrossSellingButton(@NonNull final String deepLink) {
+        getView().crossSellingAction(deepLink);
+    }
+
+    @Override
+    public void onClickDiscountItem(final int index, @Nullable final String deepLink, @Nullable final String trackId) {
+        getView().discountItemAction(index, deepLink, trackId);
+    }
+
+    @Override
+    public void onClickLoyaltyButton(@NonNull final String deepLink) {
+        getView().loyaltyAction(deepLink);
     }
 }

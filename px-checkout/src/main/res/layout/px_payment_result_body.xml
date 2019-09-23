@@ -7,6 +7,9 @@
     android:background="@color/px_white"
     android:orientation="vertical">
 
+    <include android:id="@+id/businessComponents"
+        layout="@layout/px_business_components"/>
+
     <com.mercadopago.android.px.internal.view.PaymentResultReceipt
         android:id="@+id/receipt"
         android:layout_width="match_parent"

@@ -9,7 +9,7 @@ import retrofit2.http.Query;
 
 public interface PaymentRewardService {
 
-    @GET("/{version}/px_mobile/payments/congrats")
+    @GET("/{version}/px_mobile/congrats")
     MPCall<PaymentReward> getPaymentReward(
         @Path(value = "version", encoded = true) String version,
         @Query("access_token") String accessToken,
