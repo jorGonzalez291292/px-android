@@ -30,9 +30,9 @@ public class BusinessPayment implements IPaymentDescriptor, Parcelable {
     @Nullable private final String imageUrl;
     @Nullable private final ExternalFragment topFragment;
     @Nullable private final ExternalFragment bottomFragment;
+    @Nullable private final ExternalFragment importantFragment;
 
-    @Nullable
-    private final String subtitle;
+    @Nullable private final String subtitle;
 
     @Nullable private final String paymentTypeId;
     @Nullable private final String paymentMethodId;
@@ -50,6 +50,7 @@ public class BusinessPayment implements IPaymentDescriptor, Parcelable {
         imageUrl = builder.imageUrl;
         topFragment = builder.topFragment;
         bottomFragment = builder.bottomFragment;
+        importantFragment = builder.importantFragment;
         paymentStatus = builder.paymentStatus;
         paymentStatusDetail = builder.paymentStatusDetail;
         subtitle = builder.subtitle;
@@ -70,6 +71,7 @@ public class BusinessPayment implements IPaymentDescriptor, Parcelable {
         imageUrl = in.readString();
         topFragment = in.readParcelable(ExternalFragment.class.getClassLoader());
         bottomFragment = in.readParcelable(ExternalFragment.class.getClassLoader());
+        importantFragment = in.readParcelable(ExternalFragment.class.getClassLoader());
         paymentStatus = in.readString();
         paymentStatusDetail = in.readString();
         subtitle = ParcelableUtil.getOptionalString(in);
@@ -108,6 +110,7 @@ public class BusinessPayment implements IPaymentDescriptor, Parcelable {
         dest.writeString(imageUrl);
         dest.writeParcelable(topFragment, 0);
         dest.writeParcelable(bottomFragment, 0);
+        dest.writeParcelable(importantFragment, 0);
         dest.writeString(paymentStatus);
         dest.writeString(paymentStatusDetail);
         ParcelableUtil.writeOptional(dest, subtitle);
@@ -125,6 +128,10 @@ public class BusinessPayment implements IPaymentDescriptor, Parcelable {
 
     public boolean hasBottomFragment() {
         return getBottomFragment() != null;
+    }
+
+    public boolean hasImportantFragment() {
+        return getImportantFragment() != null;
     }
 
     @NonNull
@@ -194,6 +201,11 @@ public class BusinessPayment implements IPaymentDescriptor, Parcelable {
     @Nullable
     public ExternalFragment getBottomFragment() {
         return bottomFragment;
+    }
+
+    @Nullable
+    public ExternalFragment getImportantFragment() {
+        return importantFragment;
     }
 
     @Override
