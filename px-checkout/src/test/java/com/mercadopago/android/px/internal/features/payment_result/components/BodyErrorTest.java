@@ -1,4 +1,4 @@
-package com.mercadopago.android.px.internal.features.paymentresult;
+package com.mercadopago.android.px.internal.features.payment_result.components;
 
 import android.content.Context;
 import com.mercadopago.android.px.R;

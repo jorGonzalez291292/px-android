@@ -43,7 +43,6 @@ public class FooterPaymentResultTest {
 
     @Test
     public void testApproved() {
-
         when(context.getString(R.string.px_continue_shopping)).thenReturn(LABEL_CONTINUE);
         final PaymentResult paymentResult = PaymentResults.getStatusApprovedPaymentResult();
         final FooterPaymentResult footerPaymentResult =
@@ -152,7 +151,6 @@ public class FooterPaymentResultTest {
 
     @Test
     public void testRejectedInsufficientAmountPaymentResult() {
-
         when(context.getString(R.string.px_change_payment)).thenReturn(LABEL_CHANGE);
 
         final PaymentResult paymentResult = PaymentResults.getStatusRejectedInsufficientAmountPaymentResult();
@@ -225,7 +223,6 @@ public class FooterPaymentResultTest {
 
     @Test
     public void testRejectedDuplicatedPaymentResult() {
-
         when(context.getString(R.string.px_got_it)).thenReturn(LABEL_OK);
 
         final PaymentResult paymentResult = PaymentResults.getStatusRejectedDuplicatedPaymentResult();
@@ -246,7 +243,6 @@ public class FooterPaymentResultTest {
 
     @Test
     public void testRejectedBlackListPaymentResult() {
-
         when(context.getString(R.string.px_change_payment)).thenReturn(LABEL_CHANGE);
 
         final PaymentResult paymentResult = PaymentResults.getStatusRejectedBlacklist();
@@ -336,6 +332,4 @@ public class FooterPaymentResultTest {
         assertTrue(props.buttonAction.action instanceof ChangePaymentMethodAction);
         assertNull(props.linkAction);
     }
-
-
 }
