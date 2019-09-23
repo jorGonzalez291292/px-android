@@ -9,13 +9,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import com.mercadolibre.android.mlbusinesscomponents.components.common.dividingline.MLBusinessDividingLineView;
+import com.mercadolibre.android.mlbusinesscomponents.components.common.downloadapp.MLBusinessDownloadAppData;
+import com.mercadolibre.android.mlbusinesscomponents.components.common.downloadapp.MLBusinessDownloadAppView;
+import com.mercadolibre.android.mlbusinesscomponents.components.crossselling.MLBusinessCrossSellingBoxData;
+import com.mercadolibre.android.mlbusinesscomponents.components.crossselling.MLBusinessCrossSellingBoxView;
+import com.mercadolibre.android.mlbusinesscomponents.components.discount.MLBusinessDiscountBoxData;
+import com.mercadolibre.android.mlbusinesscomponents.components.discount.MLBusinessDiscountBoxView;
+import com.mercadolibre.android.mlbusinesscomponents.components.loyalty.MLBusinessLoyaltyRingData;
+import com.mercadolibre.android.mlbusinesscomponents.components.loyalty.MLBusinessLoyaltyRingView;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration;
+import com.mercadopago.android.px.internal.features.business_result.PaymentRewardResultViewModel;
 import com.mercadopago.android.px.internal.util.FragmentUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
-import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
-import com.mercadopago.android.px.internal.viewmodel.PaymentResultType;
-import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.ExternalFragment;
 import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.PaymentResult;
@@ -23,6 +30,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class PaymentResultBody extends LinearLayout {
+
+    public interface OnClickBusinessActions extends MLBusinessLoyaltyRingView.OnClickLoyaltyRing,
+        MLBusinessDiscountBoxView.OnClickDiscountBox,
+        MLBusinessDownloadAppView.OnClickDownloadApp,
+        MLBusinessCrossSellingBoxView.OnClickCrossSellingBoxView {
+    }
 
     public PaymentResultBody(final Context context) {
         this(context, null);
@@ -32,18 +45,75 @@ public final class PaymentResultBody extends LinearLayout {
         this(context, attrs, 0);
     }
 
-    public PaymentResultBody(final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr) {
+    public PaymentResultBody(final Context context, @Nullable final AttributeSet attrs,
+        final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         inflate(context, R.layout.px_payment_result_body, this);
         setOrientation(VERTICAL);
     }
 
-    public void setModel(@NonNull final Model model) {
+    public void init(@NonNull final Model model,
+        @NonNull OnClickBusinessActions businessActions) {
+         renderLoyalty(model.rewardResultViewModel.getLoyaltyRingData(), businessActions);
+        renderDiscounts(model.rewardResultViewModel.getDiscountBoxData(), businessActions);
+        renderDownload(model.rewardResultViewModel.getDownloadAppData(), businessActions);
+        renderCrossSellingBox(model.rewardResultViewModel.getCrossSellingBoxData(),
+            businessActions);
         renderReceipt(model.receiptId);
         renderHelp(model.help);
         renderFragment(R.id.px_fragment_container_top, model.topFragment);
         renderMethods(model);
         renderFragment(R.id.px_fragment_container_bottom, model.bottomFragment);
+    }
+
+    private void renderLoyalty(@Nullable MLBusinessLoyaltyRingData loyaltyData,
+        @NonNull final OnClickBusinessActions onClickLoyaltyRing) {
+        final MLBusinessLoyaltyRingView loyaltyView = findViewById(R.id.loyaltyView);
+        final MLBusinessDividingLineView dividingView = findViewById(R.id.dividingLineView);
+
+        if (loyaltyData != null) {
+            loyaltyView.init(loyaltyData, onClickLoyaltyRing);
+        } else {
+            loyaltyView.setVisibility(GONE);
+            dividingView.setVisibility(GONE);
+        }
+    }
+
+    private void renderDiscounts(@Nullable MLBusinessDiscountBoxData discountData,
+        @NonNull final OnClickBusinessActions onClickDiscountBox) {
+        final MLBusinessDiscountBoxView discountView = findViewById(R.id.discountView);
+        final MLBusinessDividingLineView dividingView = findViewById(R.id.dividingLineView);
+
+        if (discountData != null) {
+            discountView.init(discountData, onClickDiscountBox);
+        } else {
+            discountView.setVisibility(GONE);
+            dividingView.setVisibility(GONE);
+        }
+    }
+
+    private void renderDownload(@Nullable MLBusinessDownloadAppData downloadAppData,
+        @NonNull final OnClickBusinessActions onClickBusinessActions) {
+        final MLBusinessDownloadAppView downloadAppView = findViewById(R.id.downloadView);
+        if (downloadAppData != null) {
+            downloadAppView.init(downloadAppData, onClickBusinessActions);
+        } else {
+            downloadAppView.setVisibility(GONE);
+        }
+    }
+
+    private void renderCrossSellingBox(
+        @NonNull final List<MLBusinessCrossSellingBoxData> crossSellingBoxDataList,
+        @NonNull final OnClickBusinessActions onClickBusinessActions) {
+
+        LinearLayout businessComponents = findViewById(R.id.businessComponents);
+
+        for (MLBusinessCrossSellingBoxData crossSellingData : crossSellingBoxDataList) {
+            final MLBusinessCrossSellingBoxView crossSellingBoxView =
+                new MLBusinessCrossSellingBoxView(getContext());
+            crossSellingBoxView.init(crossSellingData, onClickBusinessActions);
+            businessComponents.addView(crossSellingBoxView);
+        }
     }
 
     private void renderReceipt(@Nullable final String receiptId) {
@@ -99,7 +169,7 @@ public final class PaymentResultBody extends LinearLayout {
     public static final class Model {
 
         public static Model from(@NonNull final PaymentResult paymentResult, @NonNull final
-            PaymentResultScreenConfiguration configuration, @NonNull final String currencyId) {
+        PaymentResultScreenConfiguration configuration, @NonNull final String currencyId) {
             final List<PaymentResultMethod.Model> methodModels = new ArrayList<>();
             for (final PaymentData paymentData : paymentResult.getPaymentDataList()) {
                 methodModels.add(PaymentResultMethod.Model.with(paymentData, currencyId));
@@ -114,6 +184,7 @@ public final class PaymentResultBody extends LinearLayout {
         }
 
         /* default */ final List<PaymentResultMethod.Model> methodModels;
+        /* default */ PaymentRewardResultViewModel rewardResultViewModel;
         @Nullable /* default */ final String receiptId;
         @Nullable /* default */ final String help;
         @Nullable /* default */ final String statement;
@@ -122,6 +193,7 @@ public final class PaymentResultBody extends LinearLayout {
 
         public Model(@NonNull final Builder builder) {
             methodModels = builder.methodModels;
+            rewardResultViewModel = builder.rewardResultViewModel;
             receiptId = builder.receiptId;
             help = builder.help;
             statement = builder.statement;
@@ -132,6 +204,7 @@ public final class PaymentResultBody extends LinearLayout {
         public Builder toBuilder() {
             return new Builder()
                 .setMethodModels(methodModels)
+                .setRewardResultViewModel(rewardResultViewModel)
                 .setReceiptId(receiptId)
                 .setHelp(help)
                 .setStatement(statement)
@@ -141,14 +214,22 @@ public final class PaymentResultBody extends LinearLayout {
 
         public static class Builder {
             /* default */ List<PaymentResultMethod.Model> methodModels;
+            /* default */ PaymentRewardResultViewModel rewardResultViewModel;
             @Nullable /* default */ String receiptId;
             @Nullable /* default */ String help;
             @Nullable /* default */ String statement;
             @Nullable /* default */ ExternalFragment topFragment;
             @Nullable /* default */ ExternalFragment bottomFragment;
 
-            public Builder setMethodModels(@NonNull final List<PaymentResultMethod.Model> methodModels) {
+            public Builder setMethodModels(
+                @NonNull final List<PaymentResultMethod.Model> methodModels) {
                 this.methodModels = methodModels;
+                return this;
+            }
+
+            public Builder setRewardResultViewModel(
+                @Nullable final PaymentRewardResultViewModel rewardResultViewModel) {
+                this.rewardResultViewModel = rewardResultViewModel;
                 return this;
             }
 

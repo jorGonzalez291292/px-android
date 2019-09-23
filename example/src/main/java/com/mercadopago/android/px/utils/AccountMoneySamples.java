@@ -28,7 +28,7 @@ public final class AccountMoneySamples {
     private static final String ACCOUNT_MONEY_PAYER_EMAIL = "prueba@test_user_84540917@testuser.com";
     private static final String BUSINESS_PAYMENT_IMAGE_URL =
         "https://www.jqueryscript.net/images/Simplest-Responsive-jQuery-Image-Lightbox-Plugin-simple-lightbox.jpg";
-    private static final String BUSINESS_PAYMENT_TITLE = "Title";
+    private static final String BUSINESS_PAYMENT_TITLE = "¡Listo! Ya le pagaste a Strange Brewing";
     private static final String BUSINESS_PAYMENT_BUTTON_NAME = "ButtonSecondaryName";
 
     private AccountMoneySamples() {

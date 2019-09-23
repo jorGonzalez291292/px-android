@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
@@ -22,7 +23,7 @@ import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.payment_result.components.PaymentResultLegacyRenderer;
 import com.mercadopago.android.px.internal.features.payment_result.viewmodel.PaymentResultViewModel;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
-import com.mercadopago.android.px.internal.view.ActionDispatcher;
+import com.mercadopago.android.px.internal.view.BusinessActions;
 import com.mercadopago.android.px.internal.view.PaymentResultBody;
 import com.mercadopago.android.px.internal.view.PaymentResultHeader;
 import com.mercadopago.android.px.internal.viewmodel.ChangePaymentMethodPostPaymentAction;
@@ -79,12 +80,12 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
     }
 
     @Override
-    public void configureViews(@NonNull final PaymentResultViewModel model, @NonNull final ActionDispatcher callback) {
+    public void configureViews(@NonNull final PaymentResultViewModel model, @NonNull final BusinessActions callback) {
         findViewById(R.id.loading).setVisibility(View.GONE);
         final PaymentResultHeader header = findViewById(R.id.header);
         header.setModel(model.headerModel);
         final PaymentResultBody body = findViewById(R.id.body);
-        body.setModel(model.bodyModel);
+        body.init(model.bodyModel, callback);
         //TODO migrate
         PaymentResultLegacyRenderer.render(findViewById(R.id.container), callback, model.legacyViewModel);
     }
@@ -194,5 +195,27 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
                 getString(R.string.px_copied_to_clipboard_ack),
                 Snackbar.LENGTH_SHORT, MeliSnackbar.SnackbarType.SUCCESS).show();
         }
+    }
+
+    @Override
+    public void downloadAppAction(@NonNull final String deepLink) {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deepLink)));
+    }
+
+    @Override
+    public void crossSellingAction(@NonNull final String deepLink) {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deepLink)));
+    }
+
+    @Override
+    public void discountItemAction(final int index, @Nullable final String deepLink, @Nullable final String trackId) {
+        if (deepLink != null) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deepLink)));
+        }
+    }
+
+    @Override
+    public void loyaltyAction(@NonNull final String deepLink) {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deepLink)));
     }
 }

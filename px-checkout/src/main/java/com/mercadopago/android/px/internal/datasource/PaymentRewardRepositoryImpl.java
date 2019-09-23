@@ -51,7 +51,7 @@ public class PaymentRewardRepositoryImpl implements PaymentRewardRepository {
     private void newCall(@NonNull final Iterable<IPaymentDescriptor> payments,
         @NonNull final Callback<PaymentReward> serviceCallback) {
         final List<String> paymentsIds = new PaymentIdMapper().map(payments);
-        final String joinedPaymentIds = TextUtils.join(DELIMITER, paymentsIds);
+        final String joinedPaymentIds = "5148665090,4796698631";//TextUtils.join(DELIMITER, paymentsIds);
         paymentRewardService.getPaymentReward(API_ENVIRONMENT, privateKey, joinedPaymentIds, PLATFORM)
             .enqueue(serviceCallback);
     }

@@ -12,6 +12,7 @@ import com.mercadopago.android.px.internal.repository.InstructionsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
+import com.mercadopago.android.px.internal.view.BusinessActions;
 import com.mercadopago.android.px.internal.view.CopyAction;
 import com.mercadopago.android.px.internal.view.LinkAction;
 import com.mercadopago.android.px.internal.view.NextAction;
@@ -29,7 +30,7 @@ import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
 import java.util.List;
 
 /* default */ class PaymentResultPresenter extends BasePresenter<PaymentResultContract.View>
-    implements ActionDispatcher, PaymentResultContract.Presenter {
+    implements ActionDispatcher, PaymentResultContract.Presenter, BusinessActions {
 
     private final PaymentSettingRepository paymentSettings;
     private final PaymentModel paymentModel;
@@ -156,5 +157,25 @@ import java.util.List;
         } else if (action instanceof CopyAction) {
             getView().copyToClipboard(((CopyAction) action).content);
         }
+    }
+
+    @Override
+    public void OnClickDownloadAppButton(@NonNull final String deepLink) {
+        getView().downloadAppAction(deepLink);
+    }
+
+    @Override
+    public void OnClickCrossSellingButton(@NonNull final String deepLink) {
+        getView().crossSellingAction(deepLink);
+    }
+
+    @Override
+    public void onClickDiscountItem(final int index, @Nullable final String deepLink, @Nullable final String trackId) {
+        getView().discountItemAction(index, deepLink, trackId);
+    }
+
+    @Override
+    public void onClickLoyaltyButton(@NonNull final String deepLink) {
+        getView().loyaltyAction(deepLink);
     }
 }

@@ -72,7 +72,7 @@ public final class PaymentReward implements Parcelable {
         return crossSellings != null ? crossSellings : Collections.emptyList();
     }
 
-    /* default */ static final class Score implements Parcelable {
+    /* default */public static final class Score implements Parcelable {
 
         public static final Creator<Score> CREATOR = new Creator<Score>() {
             @Override
@@ -108,7 +108,7 @@ public final class PaymentReward implements Parcelable {
             return 0;
         }
 
-        /* default */ static final class Progress implements Parcelable {
+        /* default */ public static final class Progress implements Parcelable {
 
             public static final Creator<Progress> CREATOR = new Creator<Progress>() {
                 @Override
@@ -122,21 +122,21 @@ public final class PaymentReward implements Parcelable {
                 }
             };
 
-            private final BigDecimal percentage;
+            private final float percentage;
             @SerializedName("level_color")
             private final String color;
             @SerializedName("level_number")
             private final int level;
 
             /* default */ Progress(final Parcel in) {
-                percentage = ParcelableUtil.getBigDecimal(in);
+                percentage = in.readFloat();
                 color = in.readString();
                 level = in.readInt();
             }
 
             @Override
             public void writeToParcel(final Parcel dest, final int flags) {
-                ParcelableUtil.write(dest, percentage);
+                dest.writeFloat(percentage);
                 dest.writeString(color);
                 dest.writeInt(level);
             }
@@ -146,7 +146,7 @@ public final class PaymentReward implements Parcelable {
                 return 0;
             }
 
-            public BigDecimal getPercentage() {
+            public float getPercentage() {
                 return percentage;
             }
 
@@ -172,7 +172,7 @@ public final class PaymentReward implements Parcelable {
         }
     }
 
-    /* default */ static final class Discount implements Parcelable {
+    /* default */ public static final class Discount implements Parcelable {
 
         public static final Creator<Discount> CREATOR = new Creator<Discount>() {
             @Override
@@ -214,7 +214,7 @@ public final class PaymentReward implements Parcelable {
             return 0;
         }
 
-        /* default */ static final class Item implements Parcelable {
+        /* default */ public static final class Item implements Parcelable {
 
             public static final Creator<Item> CREATOR = new Creator<Item>() {
                 @Override
@@ -232,12 +232,14 @@ public final class PaymentReward implements Parcelable {
             private final String subtitle;
             private final String icon;
             private final String target;
+            private final String campaignId;
 
             /* default */ Item(final Parcel in) {
                 title = in.readString();
                 subtitle = in.readString();
                 icon = in.readString();
                 target = in.readString();
+                campaignId = in.readString();
             }
 
             @Override
@@ -246,6 +248,7 @@ public final class PaymentReward implements Parcelable {
                 dest.writeString(subtitle);
                 dest.writeString(icon);
                 dest.writeString(target);
+                dest.writeString(campaignId);
             }
 
             @Override
@@ -268,14 +271,26 @@ public final class PaymentReward implements Parcelable {
             public String getTarget() {
                 return target;
             }
+
+            public String getCampaignId() {
+                return campaignId;
+            }
         }
 
         public String getTitle() {
             return title;
         }
 
+        public String getSubtitle() {
+            return subtitle;
+        }
+
         public Action getAction() {
             return action;
+        }
+
+        public Action getActionDownload() {
+            return actionDownload;
         }
 
         public List<Item> getItems() {
@@ -283,7 +298,7 @@ public final class PaymentReward implements Parcelable {
         }
     }
 
-    /* default */ static final class Action implements Parcelable {
+    /* default */ public static final class Action implements Parcelable {
 
         public static final Creator<Action> CREATOR = new Creator<Action>() {
             @Override
@@ -325,7 +340,7 @@ public final class PaymentReward implements Parcelable {
         }
     }
 
-    /* default */ static final class CrossSelling implements Parcelable {
+    /* default */ public static final class CrossSelling implements Parcelable {
 
         public static final Creator<CrossSelling> CREATOR = new Creator<CrossSelling>() {
             @Override
