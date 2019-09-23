@@ -54,7 +54,7 @@ public final class PaymentResultBody extends LinearLayout {
 
     public void init(@NonNull final Model model,
         @NonNull OnClickBusinessActions businessActions) {
-         renderLoyalty(model.rewardResultViewModel.getLoyaltyRingData(), businessActions);
+        renderLoyalty(model.rewardResultViewModel.getLoyaltyRingData(), businessActions);
         renderDiscounts(model.rewardResultViewModel.getDiscountBoxData(), businessActions);
         renderDownload(model.rewardResultViewModel.getDownloadAppData(), businessActions);
         renderCrossSellingBox(model.rewardResultViewModel.getCrossSellingBoxData(),
@@ -184,7 +184,7 @@ public final class PaymentResultBody extends LinearLayout {
         }
 
         /* default */ final List<PaymentResultMethod.Model> methodModels;
-        /* default */ PaymentRewardResultViewModel rewardResultViewModel;
+        /* default */ final PaymentRewardResultViewModel rewardResultViewModel;
         @Nullable /* default */ final String receiptId;
         @Nullable /* default */ final String help;
         @Nullable /* default */ final String statement;
@@ -221,14 +221,13 @@ public final class PaymentResultBody extends LinearLayout {
             @Nullable /* default */ ExternalFragment topFragment;
             @Nullable /* default */ ExternalFragment bottomFragment;
 
-            public Builder setMethodModels(
-                @NonNull final List<PaymentResultMethod.Model> methodModels) {
+            public Builder setMethodModels(@NonNull final List<PaymentResultMethod.Model> methodModels) {
                 this.methodModels = methodModels;
                 return this;
             }
 
             public Builder setRewardResultViewModel(
-                @Nullable final PaymentRewardResultViewModel rewardResultViewModel) {
+                @NonNull final PaymentRewardResultViewModel rewardResultViewModel) {
                 this.rewardResultViewModel = rewardResultViewModel;
                 return this;
             }

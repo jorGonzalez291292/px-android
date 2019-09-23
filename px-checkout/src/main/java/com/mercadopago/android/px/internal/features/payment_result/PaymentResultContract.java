@@ -2,7 +2,6 @@ package com.mercadopago.android.px.internal.features.payment_result;
 
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.base.MvpView;
 import com.mercadopago.android.px.internal.features.payment_result.viewmodel.PaymentResultViewModel;
 import com.mercadopago.android.px.internal.view.BusinessActions;
@@ -30,11 +29,7 @@ public interface PaymentResultContract {
 
         void setStatusBarColor(@ColorRes final int color);
 
-
-        void downloadAppAction(@NonNull final String deepLink);
-        void crossSellingAction(@NonNull final String deepLink);
-        void discountItemAction(final int index, @Nullable final String deepLink, @Nullable final String trackId);
-        void loyaltyAction(@NonNull final String deepLink);
+        void processBusinessAction(@NonNull final String deepLink);
     }
 
     interface Presenter {

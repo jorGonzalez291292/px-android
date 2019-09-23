@@ -198,24 +198,7 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
     }
 
     @Override
-    public void downloadAppAction(@NonNull final String deepLink) {
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deepLink)));
-    }
-
-    @Override
-    public void crossSellingAction(@NonNull final String deepLink) {
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deepLink)));
-    }
-
-    @Override
-    public void discountItemAction(final int index, @Nullable final String deepLink, @Nullable final String trackId) {
-        if (deepLink != null) {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deepLink)));
-        }
-    }
-
-    @Override
-    public void loyaltyAction(@NonNull final String deepLink) {
+    public void processBusinessAction(@NonNull final String deepLink) {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deepLink)));
     }
 }

@@ -76,21 +76,23 @@ import com.mercadopago.android.px.tracking.internal.views.ViewTracker;
 
     @Override
     public void OnClickDownloadAppButton(@NonNull final String deepLink) {
-        getView().downloadAppAction(deepLink);
+        getView().processBusinessAction(deepLink);
     }
 
     @Override
     public void OnClickCrossSellingButton(@NonNull final String deepLink) {
-        getView().crossSellingAction(deepLink);
+        getView().processBusinessAction(deepLink);
     }
 
     @Override
     public void onClickDiscountItem(final int index, @Nullable final String deepLink, @Nullable final String trackId) {
-        getView().discountItemAction(index, deepLink, trackId);
+        if (deepLink != null) {
+            getView().processBusinessAction(deepLink);
+        }
     }
 
     @Override
     public void onClickLoyaltyButton(@NonNull final String deepLink) {
-        getView().loyaltyAction(deepLink);
+        getView().processBusinessAction(deepLink);
     }
 }
