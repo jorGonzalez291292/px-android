@@ -30,7 +30,7 @@ public class PaymentResultBodyModelMapper extends Mapper<PaymentModel, PaymentRe
 
         return new PaymentResultBody.Model.Builder()
             .setMethodModels(methodModels)
-            .setRewardResultViewModel(new PaymentRewardMapper().map(model.getPaymentReward()))
+            .setRewardViewModel(new PaymentRewardMapper().map(model.getPaymentReward()))
             .setReceiptId(String.valueOf(paymentResult.getPaymentId()))
             .setTopFragment(configuration.getTopFragment())
             .setBottomFragment(configuration.getBottomFragment())

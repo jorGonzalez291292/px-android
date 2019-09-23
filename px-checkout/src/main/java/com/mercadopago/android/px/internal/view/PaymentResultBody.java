@@ -204,7 +204,7 @@ public final class PaymentResultBody extends LinearLayout {
         public Builder toBuilder() {
             return new Builder()
                 .setMethodModels(methodModels)
-                .setRewardResultViewModel(rewardResultViewModel)
+                .setRewardViewModel(rewardResultViewModel)
                 .setReceiptId(receiptId)
                 .setHelp(help)
                 .setStatement(statement)
@@ -226,7 +226,7 @@ public final class PaymentResultBody extends LinearLayout {
                 return this;
             }
 
-            public Builder setRewardResultViewModel(
+            public Builder setRewardViewModel(
                 @NonNull final PaymentRewardViewModel rewardResultViewModel) {
                 this.rewardResultViewModel = rewardResultViewModel;
                 return this;
