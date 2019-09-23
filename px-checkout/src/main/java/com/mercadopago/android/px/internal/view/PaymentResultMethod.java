@@ -76,8 +76,9 @@ public class PaymentResultMethod extends ConstraintLayout {
             @Nullable final String statement) {
 
             final PaymentResultAmount.Model amountModel = new PaymentResultAmount.Model.Builder(
-                PaymentDataHelper.getPrettyAmountToPay(paymentData), currencyId)
+                PaymentDataHelper.getPrettyAmountToPay(paymentData), paymentData.getRawAmount(), currencyId)
                 .setPayerCost(paymentData.getPayerCost())
+                    .setDiscount(paymentData.getDiscount())
                 .build();
 
             final PaymentMethod paymentMethod = paymentData.getPaymentMethod();
