@@ -20,7 +20,7 @@ import com.mercadolibre.android.mlbusinesscomponents.components.loyalty.MLBusine
 import com.mercadolibre.android.mlbusinesscomponents.components.loyalty.MLBusinessLoyaltyRingView;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration;
-import com.mercadopago.android.px.internal.features.business_result.PaymentRewardResultViewModel;
+import com.mercadopago.android.px.internal.features.business_result.PaymentRewardViewModel;
 import com.mercadopago.android.px.internal.util.FragmentUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.ExternalFragment;
@@ -184,7 +184,7 @@ public final class PaymentResultBody extends LinearLayout {
         }
 
         /* default */ final List<PaymentResultMethod.Model> methodModels;
-        /* default */ final PaymentRewardResultViewModel rewardResultViewModel;
+        /* default */ final PaymentRewardViewModel rewardResultViewModel;
         @Nullable /* default */ final String receiptId;
         @Nullable /* default */ final String help;
         @Nullable /* default */ final String statement;
@@ -214,7 +214,7 @@ public final class PaymentResultBody extends LinearLayout {
 
         public static class Builder {
             /* default */ List<PaymentResultMethod.Model> methodModels;
-            /* default */ PaymentRewardResultViewModel rewardResultViewModel;
+            /* default */ PaymentRewardViewModel rewardResultViewModel;
             @Nullable /* default */ String receiptId;
             @Nullable /* default */ String help;
             @Nullable /* default */ String statement;
@@ -227,7 +227,7 @@ public final class PaymentResultBody extends LinearLayout {
             }
 
             public Builder setRewardResultViewModel(
-                @NonNull final PaymentRewardResultViewModel rewardResultViewModel) {
+                @NonNull final PaymentRewardViewModel rewardResultViewModel) {
                 this.rewardResultViewModel = rewardResultViewModel;
                 return this;
             }
