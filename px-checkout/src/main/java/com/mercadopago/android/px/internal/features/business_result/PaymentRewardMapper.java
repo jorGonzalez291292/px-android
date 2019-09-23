@@ -136,8 +136,8 @@ public class PaymentRewardMapper extends Mapper<PaymentReward, PaymentRewardView
 
     @Nullable
     private MLBusinessDownloadAppData getDownloadAppData(@Nullable final PaymentReward.Discount discount) {
-        final PaymentReward.Action action;
-        if (discount == null || (action = discount.getActionDownload()) == null) {
+        final PaymentReward.Discount.DownloadApp downloadApp;
+        if (discount == null || (downloadApp = discount.getActionDownload()) == null) {
             return null;
         }
 
@@ -153,19 +153,19 @@ public class PaymentRewardMapper extends Mapper<PaymentReward, PaymentRewardView
             @NonNull
             @Override
             public String getTitle() {
-                return "";
+                return downloadApp.getTitle();
             }
 
             @NonNull
             @Override
             public String getButtonTitle() {
-                return action.getLabel();
+                return downloadApp.getAction().getLabel();
             }
 
             @NonNull
             @Override
             public String getButtonDeepLink() {
-                return action.getTarget();
+                return downloadApp.getAction().getTarget();
             }
         };
     }
