@@ -44,6 +44,7 @@ public class BusinessPaymentResultMapper extends Mapper<BusinessPaymentModel, Bu
             .setStatement(payment.getStatementDescription())
             .setTopFragment(payment.getTopFragment())
             .setBottomFragment(payment.getBottomFragment())
+            .setImportantFragment(payment.getImportantFragment())
             .build();
     }
 

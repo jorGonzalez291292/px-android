@@ -7,6 +7,11 @@
     android:background="@color/px_white"
     android:orientation="vertical">
 
+    <FrameLayout
+        android:id="@+id/px_fragment_container_important"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
     <include android:id="@+id/businessComponents"
         layout="@layout/px_business_components"/>
 
@@ -21,8 +26,7 @@
     <FrameLayout
         android:id="@+id/px_fragment_container_top"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
+        android:layout_height="wrap_content"/>
 
     <com.mercadopago.android.px.internal.view.PaymentResultMethod
         android:id="@+id/primaryMethod"
@@ -37,7 +41,6 @@
     <FrameLayout
         android:id="@+id/px_fragment_container_bottom"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
+        android:layout_height="wrap_content"/>
 
 </merge>

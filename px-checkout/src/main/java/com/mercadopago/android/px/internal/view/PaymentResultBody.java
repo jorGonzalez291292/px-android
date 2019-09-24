@@ -20,15 +20,11 @@ import com.mercadolibre.android.mlbusinesscomponents.components.loyalty.MLBusine
 import com.mercadolibre.android.mlbusinesscomponents.components.loyalty.MLBusinessLoyaltyRingView;
 import com.mercadolibre.android.ui.widgets.MeliButton;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration;
 import com.mercadopago.android.px.internal.features.business_result.PaymentRewardViewModel;
 import com.mercadopago.android.px.internal.util.FragmentUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.ExternalFragment;
-import com.mercadopago.android.px.model.PaymentData;
-import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.internal.PaymentReward;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.mercadopago.android.px.internal.util.MercadoPagoUtil.isMPInstalled;
@@ -40,7 +36,7 @@ public final class PaymentResultBody extends LinearLayout {
         MLBusinessDownloadAppView.OnClickDownloadApp,
         MLBusinessCrossSellingBoxView.OnClickCrossSellingBoxView {
 
-        void OnClickShowAllDiscounts(@NonNull final String deepLink);
+        void onClickShowAllDiscounts(@NonNull final String deepLink);
     }
 
     public PaymentResultBody(final Context context) {
@@ -58,14 +54,13 @@ public final class PaymentResultBody extends LinearLayout {
         setOrientation(VERTICAL);
     }
 
-    public void init(@NonNull final Model model,
-        @NonNull OnClickBusinessActions businessActions) {
+    public void init(@NonNull final Model model, @NonNull final OnClickBusinessActions businessActions) {
+        renderFragment(R.id.px_fragment_container_important, model.importantFragment);
         renderLoyalty(model.rewardResultViewModel.getLoyaltyRingData(), businessActions);
         renderDiscounts(model.rewardResultViewModel.getDiscountBoxData(), businessActions);
         renderShowAllDiscounts(model.rewardResultViewModel.getShowAllDiscounts(), businessActions);
         renderDownload(model.rewardResultViewModel.getDownloadAppData(), businessActions);
-        renderCrossSellingBox(model.rewardResultViewModel.getCrossSellingBoxData(),
-            businessActions);
+        renderCrossSellingBox(model.rewardResultViewModel.getCrossSellingBoxData(), businessActions);
         renderReceipt(model.receiptId);
         renderHelp(model.help);
         renderFragment(R.id.px_fragment_container_top, model.topFragment);
@@ -73,7 +68,7 @@ public final class PaymentResultBody extends LinearLayout {
         renderFragment(R.id.px_fragment_container_bottom, model.bottomFragment);
     }
 
-    private void renderLoyalty(@Nullable MLBusinessLoyaltyRingData loyaltyData,
+    private void renderLoyalty(@Nullable final MLBusinessLoyaltyRingData loyaltyData,
         @NonNull final OnClickBusinessActions onClickLoyaltyRing) {
         final MLBusinessLoyaltyRingView loyaltyView = findViewById(R.id.loyaltyView);
         final MLBusinessDividingLineView dividingView = findViewById(R.id.dividingLineView);
@@ -92,13 +87,14 @@ public final class PaymentResultBody extends LinearLayout {
 
         if (showAllDiscountAction != null && isMPInstalled(getContext().getPackageManager())) {
             showAllDiscounts.setText(showAllDiscountAction.getLabel());
-            showAllDiscounts.setOnClickListener(v -> onClickDiscountBox.OnClickShowAllDiscounts(showAllDiscountAction.getTarget()));
+            showAllDiscounts.setOnClickListener(
+                v -> onClickDiscountBox.onClickShowAllDiscounts(showAllDiscountAction.getTarget()));
         } else {
             showAllDiscounts.setVisibility(GONE);
         }
     }
 
-    private void renderDiscounts(@Nullable MLBusinessDiscountBoxData discountData,
+    private void renderDiscounts(@Nullable final MLBusinessDiscountBoxData discountData,
         @NonNull final OnClickBusinessActions onClickDiscountBox) {
         final MLBusinessDiscountBoxView discountView = findViewById(R.id.discountView);
         final MLBusinessDividingLineView dividingView = findViewById(R.id.dividingLineView);
@@ -111,7 +107,7 @@ public final class PaymentResultBody extends LinearLayout {
         }
     }
 
-    private void renderDownload(@Nullable MLBusinessDownloadAppData downloadAppData,
+    private void renderDownload(@Nullable final MLBusinessDownloadAppData downloadAppData,
         @NonNull final OnClickBusinessActions onClickBusinessActions) {
         final MLBusinessDownloadAppView downloadAppView = findViewById(R.id.downloadView);
         if (downloadAppData != null && !isMPInstalled(getContext().getPackageManager())) {
@@ -125,9 +121,9 @@ public final class PaymentResultBody extends LinearLayout {
         @NonNull final List<MLBusinessCrossSellingBoxData> crossSellingBoxDataList,
         @NonNull final OnClickBusinessActions onClickBusinessActions) {
 
-        LinearLayout businessComponents = findViewById(R.id.businessComponents);
+        final LinearLayout businessComponents = findViewById(R.id.businessComponents);
 
-        for (MLBusinessCrossSellingBoxData crossSellingData : crossSellingBoxDataList) {
+        for (final MLBusinessCrossSellingBoxData crossSellingData : crossSellingBoxDataList) {
             final MLBusinessCrossSellingBoxView crossSellingBoxView =
                 new MLBusinessCrossSellingBoxView(getContext());
             crossSellingBoxView.init(crossSellingData, onClickBusinessActions);
@@ -186,22 +182,6 @@ public final class PaymentResultBody extends LinearLayout {
     }
 
     public static final class Model {
-
-        public static Model from(@NonNull final PaymentResult paymentResult, @NonNull final
-        PaymentResultScreenConfiguration configuration, @NonNull final String currencyId) {
-            final List<PaymentResultMethod.Model> methodModels = new ArrayList<>();
-            for (final PaymentData paymentData : paymentResult.getPaymentDataList()) {
-                methodModels.add(PaymentResultMethod.Model.with(paymentData, currencyId));
-            }
-
-            return new Builder()
-                .setMethodModels(methodModels)
-                .setReceiptId(String.valueOf(paymentResult.getPaymentId()))
-                .setTopFragment(configuration.getTopFragment())
-                .setBottomFragment(configuration.getBottomFragment())
-                .build();
-        }
-
         /* default */ final List<PaymentResultMethod.Model> methodModels;
         /* default */ final PaymentRewardViewModel rewardResultViewModel;
         @Nullable /* default */ final String receiptId;
@@ -209,6 +189,7 @@ public final class PaymentResultBody extends LinearLayout {
         @Nullable /* default */ final String statement;
         @Nullable /* default */ final ExternalFragment topFragment;
         @Nullable /* default */ final ExternalFragment bottomFragment;
+        @Nullable /* default */ final ExternalFragment importantFragment;
 
         public Model(@NonNull final Builder builder) {
             methodModels = builder.methodModels;
@@ -218,17 +199,7 @@ public final class PaymentResultBody extends LinearLayout {
             statement = builder.statement;
             topFragment = builder.topFragment;
             bottomFragment = builder.bottomFragment;
-        }
-
-        public Builder toBuilder() {
-            return new Builder()
-                .setMethodModels(methodModels)
-                .setRewardViewModel(rewardResultViewModel)
-                .setReceiptId(receiptId)
-                .setHelp(help)
-                .setStatement(statement)
-                .setTopFragment(topFragment)
-                .setBottomFragment(bottomFragment);
+            importantFragment = builder.importantFragment;
         }
 
         public static class Builder {
@@ -239,6 +210,7 @@ public final class PaymentResultBody extends LinearLayout {
             @Nullable /* default */ String statement;
             @Nullable /* default */ ExternalFragment topFragment;
             @Nullable /* default */ ExternalFragment bottomFragment;
+            @Nullable /* default */ ExternalFragment importantFragment;
 
             public Builder setMethodModels(@NonNull final List<PaymentResultMethod.Model> methodModels) {
                 this.methodModels = methodModels;
@@ -268,6 +240,11 @@ public final class PaymentResultBody extends LinearLayout {
 
             public Builder setBottomFragment(@Nullable final ExternalFragment bottomFragment) {
                 this.bottomFragment = bottomFragment;
+                return this;
+            }
+
+            public Builder setImportantFragment(@Nullable final ExternalFragment importantFragment) {
+                this.importantFragment = importantFragment;
                 return this;
             }
 

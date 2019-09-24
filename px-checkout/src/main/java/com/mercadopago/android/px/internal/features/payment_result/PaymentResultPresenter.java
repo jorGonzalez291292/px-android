@@ -182,7 +182,7 @@ import java.util.List;
     }
 
     @Override
-    public void OnClickShowAllDiscounts(@NonNull final String deepLink) {
+    public void onClickShowAllDiscounts(@NonNull final String deepLink) {
         getView().processBusinessAction(deepLink);
     }
 }

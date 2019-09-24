@@ -97,7 +97,7 @@ import com.mercadopago.android.px.tracking.internal.views.ViewTracker;
     }
 
     @Override
-    public void OnClickShowAllDiscounts(@NonNull final String deepLink) {
+    public void onClickShowAllDiscounts(@NonNull final String deepLink) {
         getView().processBusinessAction(deepLink);
     }
 }
