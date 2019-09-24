@@ -334,8 +334,9 @@ public final class PaymentReward implements Parcelable {
             return actionDownload;
         }
 
+        @NonNull
         public List<Item> getItems() {
-            return items;
+            return items != null ? items : Collections.emptyList();
         }
     }
 

@@ -1,6 +1,9 @@
 package com.mercadopago.android.px.tracking.internal.views;
 
 import android.support.annotation.NonNull;
+import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration;
+import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
+import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.tracking.internal.model.ResultViewTrackModel;
@@ -17,24 +20,19 @@ public class ResultViewTrack extends ViewTracker {
     private static final String UNKNOWN = "unknown";
 
     private final ResultViewTrackModel resultViewTrackModel;
-    private final PaymentResult payment;
+    private final String paymentStatus;
 
-    public enum Style {
-        GENERIC("generic"),
-        CUSTOM("custom");
-
-        @NonNull public final String value;
-
-        Style(@NonNull final String value) {
-            this.value = value;
-        }
+    public ResultViewTrack(@NonNull final PaymentModel paymentModel,
+        @NonNull final PaymentResultScreenConfiguration screenConfiguration,
+        @NonNull final CheckoutPreference checkoutPreference) {
+        resultViewTrackModel = new ResultViewTrackModel(paymentModel, screenConfiguration, checkoutPreference);
+        paymentStatus = getMappedResult(paymentModel.getPaymentResult());
     }
 
-    public ResultViewTrack(@NonNull final Style style, @NonNull final PaymentResult payment,
+    public ResultViewTrack(@NonNull final BusinessPaymentModel paymentModel,
         @NonNull final CheckoutPreference checkoutPreference) {
-        resultViewTrackModel =
-            new ResultViewTrackModel(style, payment, checkoutPreference);
-        this.payment = payment;
+        resultViewTrackModel = new ResultViewTrackModel(paymentModel, checkoutPreference);
+        paymentStatus = getMappedResult(paymentModel.getPaymentResult());
     }
 
     private String getMappedResult(@NonNull final PaymentResult payment) {
@@ -52,15 +50,12 @@ public class ResultViewTrack extends ViewTracker {
     @NonNull
     @Override
     public Map<String, Object> getData() {
-        final Map<String, Object> data = resultViewTrackModel.toMap();
-        data.put("payment_id", resultViewTrackModel.getPaymentId());
-
-        return data;
+        return resultViewTrackModel.toMap();
     }
 
     @NonNull
     @Override
     public String getViewPath() {
-        return String.format(Locale.US, PATH, getMappedResult(payment));
+        return String.format(Locale.US, PATH, paymentStatus);
     }
 }

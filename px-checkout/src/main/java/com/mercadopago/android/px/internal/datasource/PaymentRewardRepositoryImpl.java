@@ -1,7 +1,6 @@
 package com.mercadopago.android.px.internal.datasource;
 
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 import com.mercadopago.android.px.internal.datasource.cache.Cache;
 import com.mercadopago.android.px.internal.repository.PaymentRewardRepository;
 import com.mercadopago.android.px.internal.services.PaymentRewardService;
@@ -17,12 +16,12 @@ import java.util.List;
 import static com.mercadopago.android.px.services.BuildConfig.API_ENVIRONMENT;
 
 public class PaymentRewardRepositoryImpl implements PaymentRewardRepository {
-    private static final String DELIMITER = ",";
 
-    private final Cache<PaymentReward> paymentRewardCache;
     private final PaymentRewardService paymentRewardService;
     private final String privateKey;
     private final String platform;
+
+    /* default */ final Cache<PaymentReward> paymentRewardCache;
 
     public PaymentRewardRepositoryImpl(
         final Cache<PaymentReward> paymentRewardCache,
@@ -52,7 +51,7 @@ public class PaymentRewardRepositoryImpl implements PaymentRewardRepository {
     private void newCall(@NonNull final Iterable<IPaymentDescriptor> payments,
         @NonNull final Callback<PaymentReward> serviceCallback) {
         final List<String> paymentsIds = new PaymentIdMapper().map(payments);
-        final String joinedPaymentIds = TextUtils.join(DELIMITER, paymentsIds);
+        final String joinedPaymentIds = TextUtil.join(paymentsIds);
         paymentRewardService.getPaymentReward(API_ENVIRONMENT, privateKey, joinedPaymentIds, platform)
             .enqueue(serviceCallback);
     }
@@ -62,12 +61,15 @@ public class PaymentRewardRepositoryImpl implements PaymentRewardRepository {
         return new Callback<PaymentReward>() {
             @Override
             public void success(final PaymentReward paymentReward) {
+                paymentRewardCache.put(paymentReward);
                 paymentRewardCallback.handleResult(paymentIds.get(0), paymentReward);
             }
 
             @Override
             public void failure(final ApiException apiException) {
-                paymentRewardCallback.handleResult(paymentIds.get(0), PaymentReward.EMPTY);
+                final PaymentReward paymentReward = PaymentReward.EMPTY;
+                paymentRewardCache.put(paymentReward);
+                paymentRewardCallback.handleResult(paymentIds.get(0), paymentReward);
             }
         };
     }

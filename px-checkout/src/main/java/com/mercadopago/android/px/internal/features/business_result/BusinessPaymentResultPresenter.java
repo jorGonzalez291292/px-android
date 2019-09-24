@@ -9,31 +9,29 @@ import com.mercadopago.android.px.internal.view.BusinessActions;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.model.Action;
 import com.mercadopago.android.px.model.ExitAction;
-import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.internal.PrimaryExitAction;
 import com.mercadopago.android.px.model.internal.SecondaryExitAction;
 import com.mercadopago.android.px.tracking.internal.events.AbortEvent;
+import com.mercadopago.android.px.tracking.internal.events.CrossSellingEvent;
+import com.mercadopago.android.px.tracking.internal.events.DiscountItemEvent;
+import com.mercadopago.android.px.tracking.internal.events.DownloadAppEvent;
 import com.mercadopago.android.px.tracking.internal.events.PrimaryActionEvent;
+import com.mercadopago.android.px.tracking.internal.events.ScoreEvent;
 import com.mercadopago.android.px.tracking.internal.events.SecondaryActionEvent;
+import com.mercadopago.android.px.tracking.internal.events.SeeAllDiscountsEvent;
 import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
-import com.mercadopago.android.px.tracking.internal.views.ViewTracker;
 
 /* default */ class BusinessPaymentResultPresenter extends BasePresenter<BusinessPaymentResultContract.View>
     implements ActionDispatcher, BusinessPaymentResultContract.Presenter, BusinessActions {
 
     private final BusinessPaymentModel model;
-    private final ViewTracker viewTracker;
+    private final ResultViewTrack viewTracker;
 
     /* default */ BusinessPaymentResultPresenter(@NonNull final PaymentSettingRepository paymentSettings,
         @NonNull final BusinessPaymentModel model) {
         this.model = model;
 
-        viewTracker = new ResultViewTrack(ResultViewTrack.Style.CUSTOM, new PaymentResult.Builder()
-            .setPaymentData(model.getPaymentResult().getPaymentDataList())
-            .setPaymentStatus(model.getPayment().getPaymentStatus())
-            .setPaymentStatusDetail(model.getPayment().getPaymentStatusDetail())
-            .setPaymentId(model.getPayment().getId())
-            .build(), paymentSettings.getCheckoutPreference());
+        viewTracker = new ResultViewTrack(model, paymentSettings.getCheckoutPreference());
     }
 
     @Override
@@ -76,16 +74,19 @@ import com.mercadopago.android.px.tracking.internal.views.ViewTracker;
 
     @Override
     public void OnClickDownloadAppButton(@NonNull final String deepLink) {
+        new DownloadAppEvent(viewTracker).track();
         getView().processBusinessAction(deepLink);
     }
 
     @Override
     public void OnClickCrossSellingButton(@NonNull final String deepLink) {
+        new CrossSellingEvent(viewTracker).track();
         getView().processBusinessAction(deepLink);
     }
 
     @Override
     public void onClickDiscountItem(final int index, @Nullable final String deepLink, @Nullable final String trackId) {
+        new DiscountItemEvent(viewTracker, index, trackId).track();
         if (deepLink != null) {
             getView().processBusinessAction(deepLink);
         }
@@ -93,11 +94,13 @@ import com.mercadopago.android.px.tracking.internal.views.ViewTracker;
 
     @Override
     public void onClickLoyaltyButton(@NonNull final String deepLink) {
+        new ScoreEvent(viewTracker).track();
         getView().processBusinessAction(deepLink);
     }
 
     @Override
     public void onClickShowAllDiscounts(@NonNull final String deepLink) {
+        new SeeAllDiscountsEvent(viewTracker).track();
         getView().processBusinessAction(deepLink);
     }
 }
