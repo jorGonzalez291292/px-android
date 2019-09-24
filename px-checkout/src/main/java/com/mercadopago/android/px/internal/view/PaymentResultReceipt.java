@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
+import android.widget.ImageView;
 import com.mercadopago.android.px.R;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -23,6 +24,7 @@ public final class PaymentResultReceipt extends ConstraintLayout {
     public PaymentResultReceipt(final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         inflate(context, R.layout.px_payment_result_receipt, this);
+        ((ImageView) findViewById(R.id.icon)).setImageResource(R.drawable.px_receipt);
     }
 
     public void setReceiptId(@NonNull final String receiptId) {
