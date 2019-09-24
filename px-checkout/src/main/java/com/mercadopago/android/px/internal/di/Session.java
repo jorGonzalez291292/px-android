@@ -64,6 +64,7 @@ import com.mercadopago.android.px.internal.services.PaymentRewardService;
 import com.mercadopago.android.px.internal.services.PreferenceService;
 import com.mercadopago.android.px.internal.util.LocaleUtil;
 import com.mercadopago.android.px.internal.util.RetrofitUtil;
+import com.mercadopago.android.px.internal.util.ScaleUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.Device;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
@@ -290,6 +291,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
         return groupsCache;
     }
 
+    @NonNull
     private Cache<PaymentReward> getPaymentRewardCache() {
         if (paymentRewardCache == null) {
             paymentRewardCache = new PaymentRewardMemCache();
@@ -438,7 +440,8 @@ public final class Session extends ApplicationModule implements AmountComponent 
             final PaymentSettingRepository paymentSettings = getConfigurationModule().getPaymentSettings();
             paymentRewardRepository =
                 new PaymentRewardRepositoryImpl(getPaymentRewardCache(), paymentRewardService,
-                    paymentSettings.getPrivateKey(), getPlatform(applicationContext));
+                    paymentSettings.getPrivateKey(), getPlatform(applicationContext),
+                    LocaleUtil.getLanguage(getApplicationContext()), ScaleUtil.getDensityName(getApplicationContext()));
         }
         return paymentRewardRepository;
     }

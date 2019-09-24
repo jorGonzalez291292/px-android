@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.datasource;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.datasource.cache.Cache;
 import com.mercadopago.android.px.internal.repository.PaymentRewardRepository;
 import com.mercadopago.android.px.internal.services.PaymentRewardService;
@@ -10,26 +11,28 @@ import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.internal.PaymentReward;
 import com.mercadopago.android.px.model.internal.mappers.PaymentIdMapper;
+import com.mercadopago.android.px.services.BuildConfig;
 import com.mercadopago.android.px.services.Callback;
 import java.util.List;
 
-import static com.mercadopago.android.px.services.BuildConfig.API_ENVIRONMENT;
-
 public class PaymentRewardRepositoryImpl implements PaymentRewardRepository {
 
+    /* default */ final Cache<PaymentReward> paymentRewardCache;
     private final PaymentRewardService paymentRewardService;
     private final String privateKey;
     private final String platform;
+    private final String locale;
+    private final String screenDensity;
 
-    /* default */ final Cache<PaymentReward> paymentRewardCache;
-
-    public PaymentRewardRepositoryImpl(
-        final Cache<PaymentReward> paymentRewardCache,
-        final PaymentRewardService paymentRewardService, final String privateKey, final String platform) {
+    public PaymentRewardRepositoryImpl(@NonNull final Cache<PaymentReward> paymentRewardCache,
+        @NonNull final PaymentRewardService paymentRewardService, @Nullable final String privateKey,
+        @NonNull final String platform, @NonNull final String locale, @NonNull final String screenDensity) {
         this.paymentRewardCache = paymentRewardCache;
         this.paymentRewardService = paymentRewardService;
         this.privateKey = privateKey;
         this.platform = platform;
+        this.locale = locale;
+        this.screenDensity = screenDensity;
     }
 
     @Override
@@ -52,8 +55,8 @@ public class PaymentRewardRepositoryImpl implements PaymentRewardRepository {
         @NonNull final Callback<PaymentReward> serviceCallback) {
         final List<String> paymentsIds = new PaymentIdMapper().map(payments);
         final String joinedPaymentIds = TextUtil.join(paymentsIds);
-        paymentRewardService.getPaymentReward(API_ENVIRONMENT, privateKey, joinedPaymentIds, platform)
-            .enqueue(serviceCallback);
+        paymentRewardService.getPaymentReward(BuildConfig.API_ENVIRONMENT, locale, screenDensity, privateKey,
+            joinedPaymentIds, platform).enqueue(serviceCallback);
     }
 
     private Callback<PaymentReward> getServiceCallback(@NonNull final List<IPaymentDescriptor> paymentIds,
