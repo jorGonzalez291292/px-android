@@ -95,4 +95,9 @@ import com.mercadopago.android.px.tracking.internal.views.ViewTracker;
     public void onClickLoyaltyButton(@NonNull final String deepLink) {
         getView().processBusinessAction(deepLink);
     }
+
+    @Override
+    public void OnClickShowAllDiscounts(@NonNull final String deepLink) {
+        getView().processBusinessAction(deepLink);
+    }
 }

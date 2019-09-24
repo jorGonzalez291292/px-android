@@ -19,7 +19,7 @@ public class PaymentRewardMapper extends Mapper<PaymentReward, PaymentRewardView
     public PaymentRewardViewModel map(@NonNull final PaymentReward paymentReward) {
         final PaymentReward.Discount discount = paymentReward.getDiscount();
         return new PaymentRewardViewModel(getLoyaltyData(paymentReward.getScore()),
-            getDiscountBoxData(discount), getDownloadAppData(discount),
+            getDiscountBoxData(discount), getShowAllDiscount(discount), getDownloadAppData(discount),
             getCrossSellingBoxData(paymentReward.getCrossSellings()));
     }
 
@@ -132,6 +132,16 @@ public class PaymentRewardMapper extends Mapper<PaymentReward, PaymentRewardView
             });
         }
         return singleItems;
+    }
+
+    @Nullable
+    private PaymentReward.Action getShowAllDiscount(@Nullable final PaymentReward.Discount discount) {
+        final PaymentReward.Action showAllDiscount;
+        if (discount == null || (showAllDiscount = discount.getAction()) == null) {
+            return null;
+        }
+
+        return showAllDiscount;
     }
 
     @Nullable

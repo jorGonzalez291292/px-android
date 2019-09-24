@@ -18,6 +18,7 @@ import com.mercadolibre.android.mlbusinesscomponents.components.discount.MLBusin
 import com.mercadolibre.android.mlbusinesscomponents.components.discount.MLBusinessDiscountBoxView;
 import com.mercadolibre.android.mlbusinesscomponents.components.loyalty.MLBusinessLoyaltyRingData;
 import com.mercadolibre.android.mlbusinesscomponents.components.loyalty.MLBusinessLoyaltyRingView;
+import com.mercadolibre.android.ui.widgets.MeliButton;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration;
 import com.mercadopago.android.px.internal.features.business_result.PaymentRewardViewModel;
@@ -26,8 +27,11 @@ import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.ExternalFragment;
 import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.PaymentResult;
+import com.mercadopago.android.px.model.internal.PaymentReward;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.mercadopago.android.px.internal.util.MercadoPagoUtil.isMPInstalled;
 
 public final class PaymentResultBody extends LinearLayout {
 
@@ -35,6 +39,8 @@ public final class PaymentResultBody extends LinearLayout {
         MLBusinessDiscountBoxView.OnClickDiscountBox,
         MLBusinessDownloadAppView.OnClickDownloadApp,
         MLBusinessCrossSellingBoxView.OnClickCrossSellingBoxView {
+
+        void OnClickShowAllDiscounts(@NonNull final String deepLink);
     }
 
     public PaymentResultBody(final Context context) {
@@ -56,6 +62,7 @@ public final class PaymentResultBody extends LinearLayout {
         @NonNull OnClickBusinessActions businessActions) {
         renderLoyalty(model.rewardResultViewModel.getLoyaltyRingData(), businessActions);
         renderDiscounts(model.rewardResultViewModel.getDiscountBoxData(), businessActions);
+        renderShowAllDiscounts(model.rewardResultViewModel.getShowAllDiscounts(), businessActions);
         renderDownload(model.rewardResultViewModel.getDownloadAppData(), businessActions);
         renderCrossSellingBox(model.rewardResultViewModel.getCrossSellingBoxData(),
             businessActions);
@@ -79,6 +86,18 @@ public final class PaymentResultBody extends LinearLayout {
         }
     }
 
+    private void renderShowAllDiscounts(@Nullable final PaymentReward.Action showAllDiscountAction,
+        @NonNull final OnClickBusinessActions onClickDiscountBox) {
+        final MeliButton showAllDiscounts = findViewById(R.id.showAllDiscounts);
+
+        if (showAllDiscountAction != null && isMPInstalled(getContext().getPackageManager())) {
+            showAllDiscounts.setText(showAllDiscountAction.getLabel());
+            showAllDiscounts.setOnClickListener(v -> onClickDiscountBox.OnClickShowAllDiscounts(showAllDiscountAction.getTarget()));
+        } else {
+            showAllDiscounts.setVisibility(GONE);
+        }
+    }
+
     private void renderDiscounts(@Nullable MLBusinessDiscountBoxData discountData,
         @NonNull final OnClickBusinessActions onClickDiscountBox) {
         final MLBusinessDiscountBoxView discountView = findViewById(R.id.discountView);
@@ -95,7 +114,7 @@ public final class PaymentResultBody extends LinearLayout {
     private void renderDownload(@Nullable MLBusinessDownloadAppData downloadAppData,
         @NonNull final OnClickBusinessActions onClickBusinessActions) {
         final MLBusinessDownloadAppView downloadAppView = findViewById(R.id.downloadView);
-        if (downloadAppData != null) {
+        if (downloadAppData != null && !isMPInstalled(getContext().getPackageManager())) {
             downloadAppView.init(downloadAppData, onClickBusinessActions);
         } else {
             downloadAppView.setVisibility(GONE);

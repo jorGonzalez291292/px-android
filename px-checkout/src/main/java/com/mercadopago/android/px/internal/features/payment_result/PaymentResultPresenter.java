@@ -180,4 +180,9 @@ import java.util.List;
     public void onClickLoyaltyButton(@NonNull final String deepLink) {
         getView().processBusinessAction(deepLink);
     }
+
+    @Override
+    public void OnClickShowAllDiscounts(@NonNull final String deepLink) {
+        getView().processBusinessAction(deepLink);
+    }
 }
