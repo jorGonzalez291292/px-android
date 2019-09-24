@@ -18,18 +18,19 @@ import static com.mercadopago.android.px.services.BuildConfig.API_ENVIRONMENT;
 
 public class PaymentRewardRepositoryImpl implements PaymentRewardRepository {
     private static final String DELIMITER = ",";
-    private static final String PLATFORM = "MP";
 
     private final Cache<PaymentReward> paymentRewardCache;
     private final PaymentRewardService paymentRewardService;
     private final String privateKey;
+    private final String platform;
 
     public PaymentRewardRepositoryImpl(
         final Cache<PaymentReward> paymentRewardCache,
-        final PaymentRewardService paymentRewardService, final String privateKey) {
+        final PaymentRewardService paymentRewardService, final String privateKey, final String platform) {
         this.paymentRewardCache = paymentRewardCache;
         this.paymentRewardService = paymentRewardService;
         this.privateKey = privateKey;
+        this.platform = platform;
     }
 
     @Override
@@ -52,7 +53,7 @@ public class PaymentRewardRepositoryImpl implements PaymentRewardRepository {
         @NonNull final Callback<PaymentReward> serviceCallback) {
         final List<String> paymentsIds = new PaymentIdMapper().map(payments);
         final String joinedPaymentIds = TextUtils.join(DELIMITER, paymentsIds);
-        paymentRewardService.getPaymentReward(API_ENVIRONMENT, privateKey, joinedPaymentIds, PLATFORM)
+        paymentRewardService.getPaymentReward(API_ENVIRONMENT, privateKey, joinedPaymentIds, platform)
             .enqueue(serviceCallback);
     }
 

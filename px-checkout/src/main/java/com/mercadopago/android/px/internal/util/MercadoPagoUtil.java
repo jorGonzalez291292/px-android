@@ -13,6 +13,8 @@ public class MercadoPagoUtil {
 
     private static final String SDK_PREFIX = "px_";
     private static final String PACKAGE_NAME_MP = "com.mercadopago.wallet";
+    public static final String PLATFORM_MP = "MP";
+    public static final String PLATFORM_ML = "ML";
 
     public static int getPaymentMethodIcon(Context context, String paymentMethodId) {
 
@@ -110,5 +112,10 @@ public class MercadoPagoUtil {
         } catch (PackageManager.NameNotFoundException e) {
             return false;
         }
+    }
+
+    public static String getPlatform(final Context context) {
+        String packageName = context.getApplicationInfo().packageName;
+        return packageName.equals("com.mercadolibre") ? PLATFORM_ML : PLATFORM_MP;
     }
 }
