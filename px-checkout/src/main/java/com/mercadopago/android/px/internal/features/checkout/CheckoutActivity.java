@@ -15,7 +15,7 @@ import com.mercadopago.android.px.internal.features.business_result.BusinessPaym
 import com.mercadopago.android.px.internal.features.cardvault.CardVaultActivity;
 import com.mercadopago.android.px.internal.features.express.ExpressPaymentFragment;
 import com.mercadopago.android.px.internal.features.payment_vault.PaymentVaultActivity;
-import com.mercadopago.android.px.internal.features.paymentresult.PaymentResultActivity;
+import com.mercadopago.android.px.internal.features.payment_result.PaymentResultActivity;
 import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActivity;
 import com.mercadopago.android.px.internal.features.review_and_confirm.ReviewAndConfirmBuilder;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
@@ -50,7 +50,7 @@ import static com.mercadopago.android.px.internal.features.Constants.RESULT_ERRO
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_FAIL_ESC;
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_PAYMENT;
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_SILENT_ERROR;
-import static com.mercadopago.android.px.internal.features.paymentresult.PaymentResultActivity.EXTRA_RESULT_CODE;
+import static com.mercadopago.android.px.internal.features.payment_result.PaymentResultActivity.EXTRA_RESULT_CODE;
 import static com.mercadopago.android.px.model.ExitAction.EXTRA_CLIENT_RES_CODE;
 
 public class CheckoutActivity extends PXActivity<CheckoutPresenter>

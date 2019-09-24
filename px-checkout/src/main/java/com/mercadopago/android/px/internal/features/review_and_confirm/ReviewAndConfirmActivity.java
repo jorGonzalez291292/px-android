@@ -35,7 +35,7 @@ import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator;
 import com.mercadopago.android.px.internal.features.explode.ExplodeParams;
 import com.mercadopago.android.px.internal.features.explode.ExplodingFragment;
 import com.mercadopago.android.px.internal.features.payer_information.PayerInformationActivity;
-import com.mercadopago.android.px.internal.features.paymentresult.PaymentResultActivity;
+import com.mercadopago.android.px.internal.features.payment_result.PaymentResultActivity;
 import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActivity;
 import com.mercadopago.android.px.internal.features.review_and_confirm.components.ReviewAndConfirmContainer;
 import com.mercadopago.android.px.internal.features.review_and_confirm.components.actions.CancelPaymentAction;

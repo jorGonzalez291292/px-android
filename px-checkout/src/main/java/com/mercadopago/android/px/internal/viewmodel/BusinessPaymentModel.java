@@ -8,23 +8,23 @@ import com.mercadopago.android.px.model.internal.PaymentReward;
 
 public class BusinessPaymentModel extends PaymentModel {
 
-    public final BusinessPayment payment;
+    private final BusinessPayment businessPayment;
 
-    public BusinessPaymentModel(@NonNull final BusinessPayment payment, @NonNull final PaymentResult paymentResult,
+    public BusinessPaymentModel(@NonNull final BusinessPayment businessPayment, @NonNull final PaymentResult paymentResult,
         @NonNull final PaymentReward paymentReward, @NonNull final String currencyId) {
-        super(payment, paymentResult, paymentReward, currencyId);
-        this.payment = payment;
+        super(null, paymentResult, paymentReward, currencyId);
+        this.businessPayment = businessPayment;
     }
 
     @NonNull
     @Override
     public BusinessPayment getPayment() {
-        return payment;
+        return businessPayment;
     }
 
     /* default */ BusinessPaymentModel(final Parcel in) {
         super(in);
-        payment = in.readParcelable(BusinessPayment.class.getClassLoader());
+        businessPayment = in.readParcelable(BusinessPayment.class.getClassLoader());
     }
 
     public static final Creator<BusinessPaymentModel> CREATOR = new Creator<BusinessPaymentModel>() {
@@ -47,6 +47,6 @@ public class BusinessPaymentModel extends PaymentModel {
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeParcelable(payment, flags);
+        dest.writeParcelable(businessPayment, flags);
     }
 }

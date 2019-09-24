@@ -4,13 +4,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.mercadopago.android.px.internal.view.PaymentMethodComponent;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
-import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.internal.PaymentReward;
-import java.util.ArrayList;
-import java.util.List;
 
 public class PaymentModel implements Parcelable {
 
@@ -26,7 +22,7 @@ public class PaymentModel implements Parcelable {
         }
     };
 
-    public final IPaymentDescriptor payment;
+    private final IPaymentDescriptor payment;
     private final PaymentResult paymentResult;
     private final PaymentReward paymentReward;
     private final String currencyId;
@@ -44,17 +40,19 @@ public class PaymentModel implements Parcelable {
         return payment;
     }
 
-    public List<PaymentMethodComponent.PaymentMethodProps> getPaymentMethodProps() {
-        final List<PaymentMethodComponent.PaymentMethodProps> paymentMethodProps = new ArrayList<>();
-        for (final PaymentData paymentData : paymentResult.getPaymentDataList()) {
-            paymentMethodProps.add(PaymentMethodComponent.PaymentMethodProps
-                .with(paymentData, currencyId, payment.getStatementDescription()));
-        }
-        return paymentMethodProps;
-    }
-
+    @NonNull
     public PaymentResult getPaymentResult() {
         return paymentResult;
+    }
+
+    @NonNull
+    public String getCurrencyId() {
+        return currencyId;
+    }
+
+    @NonNull
+    public PaymentReward getPaymentReward() {
+        return paymentReward;
     }
 
     /* default */ PaymentModel(final Parcel in) {
