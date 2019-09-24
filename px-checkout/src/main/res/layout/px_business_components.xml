@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -39,7 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:type="actionSecondary"
-        android:text="Ver todos los descuentos"
+        tools:text="Ver todos los descuentos"
         android:layout_marginTop="@dimen/ui_3m"
         android:layout_marginRight="@dimen/ui_4m"
         android:layout_marginEnd="@dimen/ui_4m"
