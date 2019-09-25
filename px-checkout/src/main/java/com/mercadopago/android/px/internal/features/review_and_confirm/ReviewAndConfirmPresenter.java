@@ -2,7 +2,6 @@ package com.mercadopago.android.px.internal.features.review_and_confirm;
 
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.addons.ESCManagerBehaviour;
-import com.mercadopago.android.px.addons.SecurityBehaviour;
 import com.mercadopago.android.px.addons.model.SecurityValidationData;
 import com.mercadopago.android.px.configuration.DynamicDialogConfiguration;
 import com.mercadopago.android.px.core.DynamicDialogCreator;
@@ -14,6 +13,7 @@ import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
+import com.mercadopago.android.px.internal.util.SecurityValidationDataFactory;
 import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper;
@@ -39,7 +39,6 @@ import java.util.Set;
     @NonNull private final PaymentSettingRepository paymentSettings;
     @NonNull private final UserSelectionRepository userSelectionRepository;
     @NonNull private final ProductIdProvider productIdProvider;
-    @NonNull private final SecurityBehaviour securityBehaviour;
     @NonNull /* default */ final PaymentRepository paymentRepository;
     private final ExplodeDecoratorMapper explodeDecoratorMapper;
     private final ReviewAndConfirmViewTracker reviewAndConfirmViewTracker;
@@ -53,14 +52,12 @@ import java.util.Set;
         @NonNull final PaymentSettingRepository paymentSettings,
         @NonNull final UserSelectionRepository userSelectionRepository,
         @NonNull final ESCManagerBehaviour escManagerBehaviour,
-        @NonNull final ProductIdProvider productIdProvider,
-        @NonNull final SecurityBehaviour securityBehaviour) {
+        @NonNull final ProductIdProvider productIdProvider) {
         this.paymentRepository = paymentRepository;
         this.businessModelMapper = businessModelMapper;
         this.paymentSettings = paymentSettings;
         this.userSelectionRepository = userSelectionRepository;
         this.productIdProvider = productIdProvider;
-        this.securityBehaviour = securityBehaviour;
 
         final Set<String> escCardIds = escManagerBehaviour.getESCCardIds();
         explodeDecoratorMapper = new ExplodeDecoratorMapper();
@@ -122,8 +119,9 @@ import java.util.Set;
 
     @Override
     public void startSecuredPayment() {
-        final String productId = productIdProvider.getProductId();
-        getView().startSecurityValidation(new SecurityValidationData.Builder().setFlowId(productId).build());
+        final SecurityValidationData data =
+            SecurityValidationDataFactory.create(productIdProvider, paymentSettings, userSelectionRepository);
+        getView().startSecurityValidation(data);
     }
 
     @Override

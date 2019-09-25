@@ -6,7 +6,7 @@ import com.mercadopago.android.px.addons.ESCManagerBehaviour;
 import java.util.Collections;
 import java.util.Set;
 
-/* default */ final class ESCManagerDefaultBehaviour implements ESCManagerBehaviour {
+public final class ESCManagerDefaultBehaviour implements ESCManagerBehaviour {
 
     @Override
     public void setSessionId(@NonNull final String sessionId) {
@@ -15,8 +15,8 @@ import java.util.Set;
 
     @Nullable
     @Override
-    public String getESC(@Nullable final String cardId, @NonNull final String firstDigits,
-        @NonNull final String lastDigits) {
+    public String getESC(@Nullable final String cardId, @Nullable final String firstDigits,
+        @Nullable final String lastDigits) {
         return null;
     }
 
@@ -41,6 +41,7 @@ import java.util.Set;
         // do nothing
     }
 
+    @NonNull
     @Override
     public Set<String> getESCCardIds() {
         return Collections.emptySet();

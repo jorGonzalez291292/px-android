@@ -1,7 +1,6 @@
 package com.mercadopago.android.px.internal.features.express;
 
 import com.mercadopago.android.px.addons.ESCManagerBehaviour;
-import com.mercadopago.android.px.addons.SecurityBehaviour;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.configuration.CustomStringConfiguration;
 import com.mercadopago.android.px.configuration.DynamicDialogConfiguration;
@@ -43,7 +42,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyListOf;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -108,9 +106,6 @@ public class ExpressPaymentPresenterTest {
     @Mock
     private ProductIdProvider productIdProvider;
 
-    @Mock
-    private SecurityBehaviour securityBehaviour;
-
     private ExpressPaymentPresenter expressPaymentPresenter;
 
     @Before
@@ -128,6 +123,7 @@ public class ExpressPaymentPresenterTest {
         when(paymentMethodSearch.getExpress()).thenReturn(Collections.singletonList(expressMetadata));
         when(expressMetadata.getCard()).thenReturn(cardMetadata);
         when(expressMetadata.isCard()).thenReturn(true);
+        when(expressMetadata.getCustomOptionId()).thenReturn("123");
         when(cardMetadata.getId()).thenReturn("123");
         when(cardMetadata.getDisplayInfo()).thenReturn(mock(CardDisplayInfo.class));
         when(discountRepository.getConfigurationFor("123")).thenReturn(discountConfigurationModel);
@@ -138,7 +134,7 @@ public class ExpressPaymentPresenterTest {
             new ExpressPaymentPresenter(paymentRepository, configuration, disabledPaymentMethodRepository,
                 discountRepository,
                 amountRepository, groupsRepository, amountConfigurationRepository, chargeRepository,
-                escManagerBehaviour, productIdProvider, securityBehaviour);
+                escManagerBehaviour, productIdProvider);
 
         verifyAttachView();
     }

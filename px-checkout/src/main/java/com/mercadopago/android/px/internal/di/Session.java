@@ -5,8 +5,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import com.mercadopago.android.px.addons.ESCManagerBehaviour;
-import com.mercadopago.android.px.addons.internal.ESCManagerBehaviourProvider;
-import com.mercadopago.android.px.addons.internal.PXApplicationBehaviourProvider;
+import com.mercadopago.android.px.addons.BehaviourProvider;
 import com.mercadopago.android.px.addons.model.SecurityValidationData;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.configuration.PaymentConfiguration;
@@ -65,6 +64,7 @@ import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper
 import com.mercadopago.android.px.model.Device;
 import com.mercadopago.android.px.services.MercadoPagoServices;
 import com.mercadopago.android.px.tracking.internal.MPTracker;
+import java.util.HashMap;
 
 public final class Session extends ApplicationModule implements AmountComponent {
 
@@ -130,8 +130,8 @@ public final class Session extends ApplicationModule implements AmountComponent 
         final SessionIdProvider sessionIdProvider =
             newSessionProvider(mercadoPagoCheckout.getTrackingConfiguration().getSessionId());
         MPTracker.getInstance().setSessionId(sessionIdProvider.getSessionId());
-        MPTracker.getInstance().setSecurityEnabled(PXApplicationBehaviourProvider.getSecurityBehaviour()
-            .isSecurityEnabled(new SecurityValidationData.Builder().setFlowId(productId).build()));
+        MPTracker.getInstance().setSecurityEnabled(BehaviourProvider.getSecurityBehaviour()
+            .isSecurityEnabled(new SecurityValidationData.Builder(productId).build()));
         newProductIdProvider(productId);
 
         // Store persistent paymentSetting
@@ -208,8 +208,8 @@ public final class Session extends ApplicationModule implements AmountComponent 
     @NonNull
     public ESCManagerBehaviour getMercadoPagoESC() {
         final PaymentSettingRepository paymentSettings = getConfigurationModule().getPaymentSettings();
-        return ESCManagerBehaviourProvider
-            .get(getSessionIdProvider().getSessionId(), paymentSettings.getAdvancedConfiguration().isEscEnabled());
+        return BehaviourProvider.getEscManagerBehaviour(getSessionIdProvider().getSessionId(),
+            paymentSettings.getAdvancedConfiguration().isEscEnabled());
     }
 
     @NonNull

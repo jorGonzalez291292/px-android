@@ -19,4 +19,8 @@ public interface ExpressPaymentMethod {
     default boolean isCard() {
         return false;
     }
+
+    default String getCustomOptionId() {
+        return null;
+    }
 }

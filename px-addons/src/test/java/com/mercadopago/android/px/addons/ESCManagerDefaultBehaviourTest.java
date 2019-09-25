@@ -1,6 +1,5 @@
 package com.mercadopago.android.px.addons;
 
-import com.mercadopago.android.px.addons.internal.ESCManagerBehaviourProvider;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;

@@ -1,7 +1,6 @@
 package com.mercadopago.android.px.addons;
 
 import android.support.annotation.NonNull;
-import com.mercadopago.android.px.addons.internal.PXApplicationBehaviourProvider;
 
 public final class PXBehaviourConfigurer {
 
@@ -19,7 +18,7 @@ public final class PXBehaviourConfigurer {
     }
 
     public void configure() {
-        PXApplicationBehaviourProvider.set(securityBehaviour);
-        PXApplicationBehaviourProvider.set(escManagerBehaviour);
+        BehaviourProvider.set(securityBehaviour);
+        BehaviourProvider.set(escManagerBehaviour);
     }
 }

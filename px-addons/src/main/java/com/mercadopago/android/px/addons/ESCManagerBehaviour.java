@@ -8,6 +8,7 @@ public interface ESCManagerBehaviour {
 
     void setSessionId(@NonNull final String sessionId);
 
+    @Nullable
     String getESC(@Nullable final String cardId, @Nullable final String firstDigits, @Nullable final String lastDigits);
 
     boolean saveESCWith(@NonNull final String cardId, @NonNull final String esc);
@@ -18,6 +19,7 @@ public interface ESCManagerBehaviour {
 
     void deleteESCWith(@NonNull final String firstDigits, @NonNull final String lastDigits);
 
+    @NonNull
     Set<String> getESCCardIds();
 
     boolean isESCEnabled();

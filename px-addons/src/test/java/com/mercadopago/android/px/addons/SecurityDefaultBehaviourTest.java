@@ -1,6 +1,5 @@
 package com.mercadopago.android.px.addons;
 
-import com.mercadopago.android.px.addons.internal.PXApplicationBehaviourProvider;
 import com.mercadopago.android.px.addons.model.SecurityValidationData;
 import org.junit.Test;
 
@@ -14,6 +13,6 @@ public class SecurityDefaultBehaviourTest {
 
     @Test
     public void testDefaultBehaviourIsSecurityEnabled_returnsFalse() {
-        assertFalse(PXApplicationBehaviourProvider.getSecurityBehaviour().isSecurityEnabled(data));
+        assertFalse(BehaviourProvider.getSecurityBehaviour().isSecurityEnabled(data));
     }
 }

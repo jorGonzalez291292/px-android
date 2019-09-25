@@ -3,7 +3,6 @@ package com.mercadopago.android.px.internal.features.express;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.addons.ESCManagerBehaviour;
-import com.mercadopago.android.px.addons.SecurityBehaviour;
 import com.mercadopago.android.px.addons.model.SecurityValidationData;
 import com.mercadopago.android.px.configuration.DynamicDialogConfiguration;
 import com.mercadopago.android.px.core.DynamicDialogCreator;
@@ -22,6 +21,7 @@ import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.util.NoConnectivityException;
+import com.mercadopago.android.px.internal.util.SecurityValidationDataFactory;
 import com.mercadopago.android.px.internal.view.AmountDescriptorView;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
 import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
@@ -79,7 +79,6 @@ import java.util.Set;
     @NonNull private final DisabledPaymentMethodRepository disabledPaymentMethodRepository;
     @NonNull private final ChargeRepository chargeRepository;
     @NonNull private final ProductIdProvider productIdProvider;
-    @NonNull private final SecurityBehaviour securityBehaviour;
     @NonNull private final ExplodeDecoratorMapper explodeDecoratorMapper;
     @NonNull private final ESCManagerBehaviour escManagerBehaviour;
     private final PaymentMethodDrawableItemMapper paymentMethodDrawableItemMapper;
@@ -101,8 +100,7 @@ import java.util.Set;
         @NonNull final AmountConfigurationRepository amountConfigurationRepository,
         @NonNull final ChargeRepository chargeRepository,
         @NonNull final ESCManagerBehaviour escManagerBehaviour,
-        @NonNull final ProductIdProvider productIdProvider,
-        @NonNull final SecurityBehaviour securityBehaviour) {
+        @NonNull final ProductIdProvider productIdProvider) {
 
         this.paymentRepository = paymentRepository;
         this.paymentSettingRepository = paymentSettingRepository;
@@ -113,7 +111,6 @@ import java.util.Set;
         this.chargeRepository = chargeRepository;
         this.escManagerBehaviour = escManagerBehaviour;
         this.productIdProvider = productIdProvider;
-        this.securityBehaviour = securityBehaviour;
 
         explodeDecoratorMapper = new ExplodeDecoratorMapper();
         paymentMethodDrawableItemMapper = new PaymentMethodDrawableItemMapper();
@@ -236,8 +233,9 @@ import java.util.Set;
 
     @Override
     public void startSecuredPayment() {
-        final String productId = productIdProvider.getProductId();
-        getView().startSecurityValidation(new SecurityValidationData.Builder().setFlowId(productId).build());
+        final SecurityValidationData data = SecurityValidationDataFactory
+            .create(productIdProvider, paymentSettingRepository, getCurrentExpressMetadata());
+        getView().startSecurityValidation(data);
     }
 
     @Override
@@ -247,12 +245,11 @@ import java.util.Set;
         // TODO improve: This was added because onetap can detach this listener on its onDestroy
         paymentRepository.attach(this);
 
-        final ExpressMetadata expressMetadata = expressMetadataList.get(paymentMethodIndex);
+        final ExpressMetadata expressMetadata = getCurrentExpressMetadata();
 
         PayerCost payerCost = null;
 
-        final String customOptionId = expressMetadata.isCard() ? expressMetadata.getCard().getId()
-            : expressMetadata.getPaymentMethodId();
+        final String customOptionId = expressMetadata.getCustomOptionId();
         final AmountConfiguration amountConfiguration =
             amountConfigurationRepository.getConfigurationFor(customOptionId);
 
@@ -268,6 +265,10 @@ import java.util.Set;
             .track();
 
         paymentRepository.startExpressPayment(expressMetadata, payerCost, splitPayment);
+    }
+
+    private ExpressMetadata getCurrentExpressMetadata() {
+        return expressMetadataList.get(paymentMethodIndex);
     }
 
     @Override
@@ -350,11 +351,9 @@ import java.util.Set;
 
     @Override
     public void onInstallmentsRowPressed() {
-        final ExpressMetadata expressMetadata = expressMetadataList.get(paymentMethodIndex);
-        final String customOptionId =
-            expressMetadata.isCard() ? expressMetadata.getCard().getId() : expressMetadata.getPaymentMethodId();
+        final ExpressMetadata expressMetadata = getCurrentExpressMetadata();
         final AmountConfiguration amountConfiguration =
-            amountConfigurationRepository.getConfigurationFor(customOptionId);
+            amountConfigurationRepository.getConfigurationFor(expressMetadata.getCustomOptionId());
         final List<PayerCost> payerCostList = amountConfiguration.getAppliedPayerCost(
             splitSelectionState.userWantsToSplit());
         final int index = payerCostList.indexOf(
@@ -398,9 +397,7 @@ import java.util.Set;
      */
     @Override
     public void onPayerCostSelected(final PayerCost payerCostSelected) {
-        final ExpressMetadata expressMetadata = expressMetadataList.get(paymentMethodIndex);
-        final String customOptionId =
-            expressMetadata.isCard() ? expressMetadata.getCard().getId() : expressMetadata.getPaymentMethodId();
+        final String customOptionId = getCurrentExpressMetadata().getCustomOptionId();
         final int selected = amountConfigurationRepository.getConfigurationFor(customOptionId)
             .getAppliedPayerCost(splitSelectionState.userWantsToSplit())
             .indexOf(payerCostSelected);

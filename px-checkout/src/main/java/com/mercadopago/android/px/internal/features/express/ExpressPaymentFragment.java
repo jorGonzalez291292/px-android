@@ -25,7 +25,7 @@ import android.view.animation.AnimationUtils;
 import com.mercadolibre.android.ui.widgets.MeliButton;
 import com.mercadolibre.android.ui.widgets.MeliSnackbar;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.addons.internal.PXApplicationBehaviourProvider;
+import com.mercadopago.android.px.addons.BehaviourProvider;
 import com.mercadopago.android.px.addons.model.SecurityValidationData;
 import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.internal.di.Session;
@@ -243,8 +243,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             session.getAmountConfigurationRepository(),
             session.getConfigurationModule().getChargeSolver(),
             session.getMercadoPagoESC(),
-            session.getProductIdProvider(),
-            PXApplicationBehaviourProvider.getSecurityBehaviour());
+            session.getProductIdProvider());
     }
 
     @Override
@@ -450,7 +449,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void startSecurityValidation(@NonNull final SecurityValidationData data) {
-        PXApplicationBehaviourProvider.getSecurityBehaviour().startValidation(this, data, REQ_CODE_BIOMETRICS);
+        BehaviourProvider.getSecurityBehaviour().startValidation(this, data, REQ_CODE_BIOMETRICS);
     }
 
     //FIXME Used to start payment from activity

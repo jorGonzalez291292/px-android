@@ -4,7 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.addons.ESCManagerBehaviour;
-import com.mercadopago.android.px.addons.internal.ESCManagerBehaviourProvider;
+import com.mercadopago.android.px.addons.BehaviourProvider;
 import com.mercadopago.android.px.internal.core.ApplicationModule;
 import com.mercadopago.android.px.internal.datasource.CardAssociationGatewayService;
 import com.mercadopago.android.px.internal.datasource.CardAssociationService;
@@ -47,7 +47,7 @@ public final class CardAssociationSession extends ApplicationModule {
 
     @NonNull
     public ESCManagerBehaviour getMercadoPagoESC() {
-        return ESCManagerBehaviourProvider.get(getSessionIdProvider().getSessionId(), true);
+        return BehaviourProvider.getEscManagerBehaviour(getSessionIdProvider().getSessionId(), true);
     }
 
     @NonNull

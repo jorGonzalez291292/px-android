@@ -8,7 +8,8 @@ import android.support.v4.app.Fragment;
 import com.mercadopago.android.px.addons.SecurityBehaviour;
 import com.mercadopago.android.px.addons.model.SecurityValidationData;
 
-/* default */ final class SecurityDefaultBehaviour implements SecurityBehaviour {
+public final class SecurityDefaultBehaviour implements SecurityBehaviour {
+
     @Override
     public boolean isSecurityEnabled(@NonNull final SecurityValidationData data) {
         return false;

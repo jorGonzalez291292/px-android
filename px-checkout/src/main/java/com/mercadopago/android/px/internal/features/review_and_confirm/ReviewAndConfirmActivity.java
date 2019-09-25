@@ -21,7 +21,7 @@ import android.widget.LinearLayout;
 import com.mercadolibre.android.ui.widgets.MeliButton;
 import com.mercadolibre.android.ui.widgets.MeliSnackbar;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.addons.internal.PXApplicationBehaviourProvider;
+import com.mercadopago.android.px.addons.BehaviourProvider;
 import com.mercadopago.android.px.addons.model.SecurityValidationData;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.configuration.ReviewAndConfirmConfiguration;
@@ -140,8 +140,7 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
                 session.getConfigurationModule().getPaymentSettings(),
                 session.getConfigurationModule().getUserSelectionRepository(),
                 session.getMercadoPagoESC(),
-                session.getProductIdProvider(),
-                PXApplicationBehaviourProvider.getSecurityBehaviour());
+                session.getProductIdProvider());
             presenter.attachView(this);
         } catch (final Exception e) {
             FrictionEventTracker.with(ReviewAndConfirmViewTracker.PATH,
@@ -285,7 +284,7 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
 
     @Override
     public void startSecurityValidation(@NonNull final SecurityValidationData data) {
-        PXApplicationBehaviourProvider.getSecurityBehaviour().startValidation(this, data, REQ_CODE_BIOMETRICS);
+        BehaviourProvider.getSecurityBehaviour().startValidation(this, data, REQ_CODE_BIOMETRICS);
     }
 
     private void configureFloatingBehaviour(final ViewGroup scrollView, final View floatingConfirmLayout) {
