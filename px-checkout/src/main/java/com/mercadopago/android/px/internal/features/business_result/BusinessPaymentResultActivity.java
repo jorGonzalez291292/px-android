@@ -1,5 +1,6 @@
 package com.mercadopago.android.px.internal.features.business_result;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -99,6 +100,10 @@ public class BusinessPaymentResultActivity extends PXActivity<BusinessPaymentRes
 
     @Override
     public void processBusinessAction(@NonNull final String deepLink) {
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deepLink)));
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deepLink)));
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

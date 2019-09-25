@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.features.payment_result;
 
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -198,6 +199,10 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
 
     @Override
     public void processBusinessAction(@NonNull final String deepLink) {
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deepLink)));
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deepLink)));
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }
