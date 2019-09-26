@@ -15,6 +15,11 @@ public final class SecurityRules extends RuleSet<SecurityValidationData> {
     }
 
     @Override
+    protected Operator applyWithOperator() {
+        return Operator.AND;
+    }
+
+    @Override
     public List<Rule<SecurityValidationData>> getRules() {
         final List<Rule<SecurityValidationData>> rules = new ArrayList<>();
         rules.add(this::validateEscData);
@@ -26,6 +31,6 @@ public final class SecurityRules extends RuleSet<SecurityValidationData> {
      */
     private boolean validateEscData(@NonNull final SecurityValidationData data) {
         return data.getEscValidationData() == null ||
-            new EscRules(escManagerBehaviour).apply(data.getEscValidationData());
+            new SecurityCodeRules(escManagerBehaviour).apply(data.getEscValidationData());
     }
 }
