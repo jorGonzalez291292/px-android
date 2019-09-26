@@ -20,6 +20,7 @@ import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.model.internal.PaymentReward;
 import com.mercadopago.android.px.services.Callback;
 import java.lang.ref.WeakReference;
 import java.util.Collections;
@@ -129,10 +130,11 @@ public final class PaymentServiceHandlerWrapper implements PaymentServiceHandler
 
     @Override
     public void onPaymentFinished(@NonNull final IPaymentDescriptor payment) {
-        paymentRewardRepository.getPaymentReward(Collections.singletonList(payment), paymentRepository.createPaymentResult(payment), (paymentParam, paymentResult, paymentReward) -> {
-            // TODO remove - v5 when paymentTypeId is mandatory for payments
-            payment.process(getHandler());
-        });
+        paymentRewardRepository.getPaymentReward(Collections.singletonList(payment), paymentRepository.createPaymentResult(payment), this::handleResult);
+    }
+
+    private void handleResult(@NonNull final IPaymentDescriptor payment, @NonNull final PaymentResult paymentResult, @NonNull final PaymentReward paymentReward) {
+        payment.process(getHandler());
     }
 
     /* default */

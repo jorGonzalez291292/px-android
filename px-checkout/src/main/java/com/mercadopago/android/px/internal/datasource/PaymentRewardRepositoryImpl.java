@@ -68,7 +68,7 @@ public class PaymentRewardRepositoryImpl implements PaymentRewardRepository {
         @NonNull final PaymentRewardCallback paymentRewardCallback) {
         return new Callback<PaymentReward>() {
             @Override
-            public void success(PaymentReward paymentReward) {
+            public void success(final PaymentReward paymentReward) {
                 paymentRewardCache.put(paymentReward);
                 paymentRewardCallback.handleResult(paymentIds.get(0), paymentResult, paymentReward);
             }
