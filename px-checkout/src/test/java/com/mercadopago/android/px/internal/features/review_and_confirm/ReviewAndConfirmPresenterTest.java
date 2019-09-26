@@ -363,7 +363,7 @@ public class ReviewAndConfirmPresenterTest {
         when(paymentRepository.createPaymentResult(payment)).thenReturn(paymentResult);
         when(paymentSettingRepository.getCheckoutPreference()).thenReturn(checkoutPreference);
         when(checkoutPreference.getSite()).thenReturn(Sites.ARGENTINA);
-        doCallRealMethod().when(paymentRewardRepository).getPaymentReward(any(), any());
+        doCallRealMethod().when(paymentRewardRepository).getPaymentReward(any(), any(),any());
 
         reviewAndConfirmPresenter.hasFinishPaymentAnimation();
 

@@ -129,7 +129,7 @@ public final class PaymentServiceHandlerWrapper implements PaymentServiceHandler
 
     @Override
     public void onPaymentFinished(@NonNull final IPaymentDescriptor payment) {
-        paymentRewardRepository.getPaymentReward(Collections.singletonList(payment), (paymentParam, paymentReward) -> {
+        paymentRewardRepository.getPaymentReward(Collections.singletonList(payment), paymentRepository.createPaymentResult(payment), (paymentParam, paymentResult, paymentReward) -> {
             // TODO remove - v5 when paymentTypeId is mandatory for payments
             payment.process(getHandler());
         });

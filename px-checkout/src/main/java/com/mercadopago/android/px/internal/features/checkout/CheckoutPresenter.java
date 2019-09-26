@@ -441,12 +441,12 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
 
     @Override
     public void onPaymentFinished(@NonNull final IPaymentDescriptor payment) {
-        paymentRewardRepository.getPaymentReward(Collections.singletonList(payment), this::handleResult);
+        paymentRewardRepository.getPaymentReward(Collections.singletonList(payment), paymentRepository.createPaymentResult(payment), this::handleResult);
     }
 
     private void handleResult(@NonNull final IPaymentDescriptor payment,
+        @NonNull final PaymentResult paymentResult,
         @NonNull final PaymentReward paymentReward) {
-        final PaymentResult paymentResult = paymentRepository.createPaymentResult(payment);
         final String currencyId = paymentSettingRepository.getCheckoutPreference().getSite().getCurrencyId();
         payment.process(new IPaymentDescriptorHandler() {
             @Override

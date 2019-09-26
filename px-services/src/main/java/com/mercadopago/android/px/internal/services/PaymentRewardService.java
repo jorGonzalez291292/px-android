@@ -16,5 +16,6 @@ public interface PaymentRewardService {
         @Header("x-density") String density,
         @Query("access_token") String accessToken,
         @Query("payment_ids") String paymentIds,
-        @Query("platform") String platform);
+        @Query("platform") String platform,
+        @Query("campaign_id") String campaignId);
 }

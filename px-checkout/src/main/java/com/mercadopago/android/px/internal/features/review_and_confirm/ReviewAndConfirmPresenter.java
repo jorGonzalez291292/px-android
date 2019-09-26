@@ -94,13 +94,12 @@ import java.util.Set;
     @Override
     public void hasFinishPaymentAnimation() {
         final IPaymentDescriptor payment = paymentRepository.getPayment();
-        paymentRewardRepository.getPaymentReward(Collections.singletonList(payment), this::handleResult);
+        paymentRewardRepository.getPaymentReward(Collections.singletonList(payment), paymentRepository.createPaymentResult(payment), this::handleResult);
     }
 
-    private void handleResult(@NonNull final IPaymentDescriptor payment,
+    private void handleResult(@NonNull final IPaymentDescriptor payment, @NonNull final PaymentResult paymentResult,
         @NonNull final PaymentReward paymentReward) {
         final String currencyId = paymentSettings.getCheckoutPreference().getSite().getCurrencyId();
-        final PaymentResult paymentResult = paymentRepository.createPaymentResult(payment);
         payment.process(new IPaymentDescriptorHandler() {
             @Override
             public void visit(@NonNull final IPaymentDescriptor payment) {
