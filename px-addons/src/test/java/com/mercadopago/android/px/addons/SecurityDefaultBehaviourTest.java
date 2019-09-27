@@ -9,7 +9,7 @@ public class SecurityDefaultBehaviourTest {
 
     private static final String DUMMY_FLOW_ID = "DUMMY_FLOW_ID";
     private final SecurityValidationData data =
-        new SecurityValidationData.Builder().setFlowId(DUMMY_FLOW_ID).build();
+        new SecurityValidationData.Builder(DUMMY_FLOW_ID).build();
 
     @Test
     public void testDefaultBehaviourIsSecurityEnabled_returnsFalse() {

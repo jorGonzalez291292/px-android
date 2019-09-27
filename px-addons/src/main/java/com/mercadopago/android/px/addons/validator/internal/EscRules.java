@@ -40,7 +40,7 @@ import java.util.List;
      * @return true card id is not null or empty.
      */
     private boolean hasCardId(final EscValidationData data) {
-        return data.getCardId() != null;
+        return data.getCardId() != null && !data.getCardId().isEmpty();
     }
 
     /**
