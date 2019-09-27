@@ -11,7 +11,7 @@ import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class EscRulesTest extends RulesTest {
+public class EscRulesTest extends BaseSecurityRulesTest {
 
     private EscRules escRules;
 

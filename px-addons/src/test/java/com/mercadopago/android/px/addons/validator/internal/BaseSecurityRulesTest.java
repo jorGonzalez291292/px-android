@@ -8,7 +8,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.when;
 
-abstract class RulesTest {
+abstract class BaseSecurityRulesTest {
 
     private static final String CARD_ID = "123";
     private static final String ESC = "123";

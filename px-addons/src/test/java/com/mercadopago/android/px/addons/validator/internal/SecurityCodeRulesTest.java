@@ -9,7 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SecurityCodeRulesTest extends RulesTest {
+public class SecurityCodeRulesTest extends BaseSecurityRulesTest {
 
     private SecurityCodeRules securityCodeRules;
 

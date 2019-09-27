@@ -11,7 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SecurityRulesTest extends RulesTest {
+public class SecurityRulesTest extends BaseSecurityRulesTest {
 
     @Mock private SecurityValidationData securityValidationData;
     private SecurityRules securityRulesTest;
