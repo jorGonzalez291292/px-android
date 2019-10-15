@@ -31,11 +31,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.core.internal.PicassoLoader;
 import com.mercadopago.android.px.internal.font.FontHelper;
 import com.mercadopago.android.px.internal.font.PxFont;
 import com.mercadopago.android.px.internal.view.MPEditText;
 import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 public final class ViewUtils {
 
@@ -61,11 +61,11 @@ public final class ViewUtils {
 
     public static void loadOrCallError(final String imgUrl, final ImageView logo, final Callback callback) {
         if (!TextUtil.isEmpty(imgUrl)) {
-            Picasso.with(logo.getContext())
+            PicassoLoader
                 .load(imgUrl)
                 .into(logo, callback);
         } else {
-            callback.onError();
+            callback.onError(new Exception());
         }
     }
 
@@ -113,7 +113,7 @@ public final class ViewUtils {
             final InputMethodManager imm = (InputMethodManager) activity.getSystemService(
                 Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-        } catch (final Exception ex) {
+        } catch (final Exception ignored) {
         }
     }
 

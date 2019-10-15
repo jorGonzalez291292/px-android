@@ -91,7 +91,7 @@ public class BankDealsAdapter extends RecyclerView.Adapter<BankDealsAdapter.View
                     }
 
                     @Override
-                    public void onError() {
+                    public void onError(final Exception e) {
                         logoName.setVisibility(View.VISIBLE);
                         bankImageView.setVisibility(View.GONE);
                     }

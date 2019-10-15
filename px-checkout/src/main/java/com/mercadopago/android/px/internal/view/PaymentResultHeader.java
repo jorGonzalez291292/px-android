@@ -10,11 +10,11 @@ import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.core.internal.PicassoLoader;
 import com.mercadopago.android.px.internal.util.ScaleUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.viewmodel.GenericLocalized;
-import com.squareup.picasso.Picasso;
 
 public class PaymentResultHeader extends ConstraintLayout {
 
@@ -59,7 +59,7 @@ public class PaymentResultHeader extends ConstraintLayout {
 
     private void renderIcon(@NonNull final ImageView icon, @NonNull final Model model) {
         final int size = ScaleUtil.getPxFromDp(90, getContext());
-        Picasso.with(getContext())
+        PicassoLoader
             .load(TextUtil.isNotEmpty(model.iconUrl) ? model.iconUrl : null)
             .transform(new CircleTransform())
             .resize(size, size)

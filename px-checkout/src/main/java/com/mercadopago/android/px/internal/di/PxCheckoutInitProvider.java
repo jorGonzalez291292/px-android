@@ -8,12 +8,18 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.mercadopago.android.px.core.internal.PicassoLoader;
 
 public class PxCheckoutInitProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        Session.initialize(getContext());
+        final Context context = getContext();
+        if (context != null) {
+            Session.initialize(context);
+            PicassoLoader.initialize(context);
+            return true;
+        }
         return false;
     }
 
