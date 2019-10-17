@@ -21,9 +21,9 @@ public class CheckoutDownloader implements Downloader {
     @VisibleForTesting final Call.Factory client;
     private final Cache cache;
     private boolean sharedClient = true;
-    private static final String PICASSO_CACHE = "picasso/cache";
+    private static final String PICASSO_CACHE = "px-picasso/cache";
     private static final int MIN_DISK_CACHE_SIZE = 10 * 1024 * 1024; // 10MB
-    public static final int THREAD_STATS_TAG = new Random().hashCode();
+    private static final int THREAD_STATS_TAG = new Random().hashCode();
 
     private static long calculateDiskCacheSize(File dir) {
         long size = MIN_DISK_CACHE_SIZE;
@@ -140,8 +140,8 @@ public class CheckoutDownloader implements Downloader {
         okhttp3.Response response = client.newCall(builder.build()).execute();
         int responseCode = response.code();
         if (responseCode >= 300) {
-            TrafficStats.clearThreadStatsTag();
             response.body().close();
+            TrafficStats.clearThreadStatsTag();
             throw new ResponseException(responseCode + " " + response.message(), networkPolicy,
                 responseCode);
         }
