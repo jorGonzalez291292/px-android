@@ -18,6 +18,7 @@ public class PicassoLoader {
             picasso = new Picasso.Builder(context)
                 .downloader(new CheckoutDownloader(context))
                 .indicatorsEnabled(BuildConfig.DEBUG)
+                .loggingEnabled(BuildConfig.DEBUG)
                 .build();
         }
     }
