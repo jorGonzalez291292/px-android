@@ -13,15 +13,17 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class ObjectMapTypeAdapter extends TypeAdapter<Object> {
+final class ObjectMapTypeAdapter extends TypeAdapter<Object> {
 
     static final TypeAdapterFactory FACTORY = new TypeAdapterFactory() {
         @SuppressWarnings("unchecked")
-        @Override public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-            if (type.getRawType() == HashMap.class) {
+        @Override
+        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+            if (type.getRawType() == ObjectMapType.class) {
                 return (TypeAdapter<T>) new ObjectMapTypeAdapter(gson);
             }
             return null;
@@ -34,7 +36,8 @@ public final class ObjectMapTypeAdapter extends TypeAdapter<Object> {
         this.gson = gson;
     }
 
-    @Override public Object read(final JsonReader in) throws IOException {
+    @Override
+    public Object read(final JsonReader in) throws IOException {
         JsonToken token = in.peek();
         switch (token) {
         case BEGIN_ARRAY:
@@ -90,7 +93,8 @@ public final class ObjectMapTypeAdapter extends TypeAdapter<Object> {
     }
 
     @SuppressWarnings("unchecked")
-    @Override public void write(JsonWriter out, Object value) throws IOException {
+    @Override
+    public void write(JsonWriter out, Object value) throws IOException {
         if (value == null) {
             out.nullValue();
             return;
@@ -98,11 +102,12 @@ public final class ObjectMapTypeAdapter extends TypeAdapter<Object> {
 
         TypeAdapter<Object> typeAdapter = gson.getAdapter((Class<Object>) value.getClass());
         if (typeAdapter instanceof ObjectMapTypeAdapter) {
-            out.beginObject();
-            out.endObject();
             return;
         }
 
         typeAdapter.write(out, value);
+    }
+
+    final class ObjectMapType {
     }
 }
