@@ -22,7 +22,7 @@ final class ObjectMapTypeAdapter extends TypeAdapter<Object> {
         @Nullable
         @SuppressWarnings("unchecked")
         @Override
-        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+        public <T> TypeAdapter<T> create(final Gson gson, final TypeToken<T> type) {
             if (type.getRawType().equals(ObjectMapType.class)) {
                 return (TypeAdapter<T>) new ObjectMapTypeAdapter(gson);
             }
