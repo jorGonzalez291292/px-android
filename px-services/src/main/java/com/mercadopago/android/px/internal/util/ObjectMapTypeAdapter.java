@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-final class ObjectMapTypeAdapter extends TypeAdapter<Object> {
+/* default */ final class ObjectMapTypeAdapter extends TypeAdapter<Object> {
 
     /* default */ static final TypeAdapterFactory FACTORY = new TypeAdapterFactory() {
         @Nullable
