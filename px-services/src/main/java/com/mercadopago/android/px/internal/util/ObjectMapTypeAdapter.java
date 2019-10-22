@@ -13,18 +13,17 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class ObjectMapTypeAdapter extends TypeAdapter<Object> {
+final class ObjectMapTypeAdapter extends TypeAdapter<Object> {
 
     /* default */ static final TypeAdapterFactory FACTORY = new TypeAdapterFactory() {
         @Nullable
         @SuppressWarnings("unchecked")
         @Override
-        public <T> TypeAdapter<T> create(final Gson gson, final TypeToken<T> type) {
-            if (type.getRawType().equals(HashMap.class)) {
+        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+            if (type.getRawType().equals(ObjectMapType.class)) {
                 return (TypeAdapter<T>) new ObjectMapTypeAdapter(gson);
             }
             return null;
@@ -105,11 +104,12 @@ public final class ObjectMapTypeAdapter extends TypeAdapter<Object> {
 
         final TypeAdapter<Object> typeAdapter = gson.getAdapter((Class<Object>) value.getClass());
         if (typeAdapter instanceof ObjectMapTypeAdapter) {
-            out.beginObject();
-            out.endObject();
             return;
         }
 
         typeAdapter.write(out, value);
+    }
+
+    final class ObjectMapType {
     }
 }

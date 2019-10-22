@@ -6,7 +6,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
-import java.util.HashMap;
 import java.util.Map;
 
 public final class JsonUtil {
@@ -34,7 +33,7 @@ public final class JsonUtil {
 
     private static Map<String, Object> getMapFromJson(@NonNull final String json) {
         return GSON.fromJson(
-            json, new TypeToken<HashMap<String, Object>>() {
+            json, new TypeToken<ObjectMapTypeAdapter.ObjectMapType>() {
             }.getType()
         );
     }
