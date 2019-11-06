@@ -9,8 +9,6 @@ import com.mercadopago.android.px.model.ExitAction;
 /* default */ interface BusinessPaymentResultContract {
 
     /* default */ interface View extends MvpView {
-        void configureViews(@NonNull final BusinessPaymentResultViewModel model,
-            @NonNull final BusinessActions callback);
 
         void processCustomExit();
 

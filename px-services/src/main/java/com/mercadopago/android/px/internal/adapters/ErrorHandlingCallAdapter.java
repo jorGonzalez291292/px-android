@@ -68,6 +68,11 @@ public final class ErrorHandlingCallAdapter {
             call.enqueue(new retrofit2.Callback<T>() {
                 @Override
                 public void onResponse(@NonNull final Call<T> call, @NonNull final Response<T> response) {
+                    try {
+                        Thread.sleep(4000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     executeOnMainThread(() -> {
                         final int code = response.code();
                         if (code >= SUCCESS_STATUS_CODE && code < REDIRECT_STATUS_CODE) {

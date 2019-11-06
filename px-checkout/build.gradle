@@ -42,4 +42,9 @@ dependencies {
     implementation "com.mercadolibre.android:ui:$meli_ui_lib"
     implementation "com.mercadolibre.android:carddrawer:$meli_card_drawer"
     implementation "com.mercadolibre.android.mlbusinesscomponents:mlbusinesscomponents:$mlbusinesscomponents"
+
+    implementation "android.arch.lifecycle:extensions:$lifecycle"
+    implementation "android.arch.lifecycle:livedata-core:$lifecycle"
+    implementation "android.arch.lifecycle:viewmodel:$lifecycle"
+
 }

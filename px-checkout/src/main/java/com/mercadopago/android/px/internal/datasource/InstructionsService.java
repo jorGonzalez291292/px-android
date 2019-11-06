@@ -74,7 +74,7 @@ public class InstructionsService implements InstructionsRepository {
             @Override
             public void success(final Instructions instructions) {
                 final List<Instruction> instructionList = resolveInstruction(instructions);
-                instructionsCache.put(id, instructionList);
+                //instructionsCache.put(id, instructionList);
                 callback.success(instructionList);
             }
 

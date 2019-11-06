@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.features.payment_result;
 
 import android.annotation.SuppressLint;
+import android.arch.lifecycle.Observer;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -13,7 +14,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 import com.mercadolibre.android.ui.widgets.MeliSnackbar;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.base.PXActivity;
@@ -29,8 +32,10 @@ import com.mercadopago.android.px.internal.view.PaymentResultHeader;
 import com.mercadopago.android.px.internal.viewmodel.ChangePaymentMethodPostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.RecoverPaymentPostPaymentAction;
+import com.mercadopago.android.px.model.Instruction;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import java.util.List;
 
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_ACTION;
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_CUSTOM_EXIT;
@@ -48,6 +53,8 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
     private static final String EXTRA_PAYMENT_MODEL = "extra_payment_model";
     public static final String EXTRA_RESULT_CODE = "extra_result_code";
 
+    private PaymentViewModel resultViewModel;
+
     public static Intent getIntent(@NonNull final Context context, @NonNull final PaymentModel paymentModel) {
         final Intent intent = new Intent(context, PaymentResultActivity.class);
         intent.putExtra(EXTRA_PAYMENT_MODEL, paymentModel);
@@ -63,6 +70,16 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
         if (savedInstanceState == null) {
             presenter.onFreshStart();
         }
+
+        resultViewModel = new PaymentViewModel(getIntent().getParcelableExtra(EXTRA_PAYMENT_MODEL), Session.getInstance().getInstructionsRepository());
+
+        resultViewModel.resultLiveData.observe(this, new Observer<List<Instruction>>() {
+            @Override
+            public void onChanged(@Nullable final List<Instruction> instructions) {
+                Log.d("JORGE", "Instruction");
+                Toast.makeText(PaymentResultActivity.this, "pija", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @NonNull
@@ -83,6 +100,7 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
         body.init(model.bodyModel, callback);
         //TODO migrate
         PaymentResultLegacyRenderer.render(findViewById(R.id.container), callback, model.legacyViewModel);
+        Toast.makeText(PaymentResultActivity.this, "pija", Toast.LENGTH_SHORT).show();
     }
 
     @Override

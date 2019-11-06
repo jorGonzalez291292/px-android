@@ -68,7 +68,7 @@ import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
 
     private void mapPaymentModel() {
         final BusinessPaymentResultViewModel viewModel = new BusinessPaymentResultMapper().map(model);
-        getView().configureViews(viewModel, this);
+        //getView().configureViews(viewModel, this);
         getView().setStatusBarColor(viewModel.headerModel.getBackgroundColor());
     }
 
